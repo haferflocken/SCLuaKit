@@ -319,7 +319,11 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     new IdentifierExpression(line, column, ctx.ID.getText)
   }
 
-  override def visitParentheticalExpression(ctx : ParentheticalExpressionContext) : ASTNode = visitChildren(ctx)
+  override def visitParentheticalExpression(ctx : ParentheticalExpressionContext) : ASTNode = {
+    val l = visitChildren(ctx).asInstanceOf[ExprList]
+    assert(l.elements.size == 1)
+    l.elements.head
+  }
 
   override def visitFunctionDeclExpression(ctx : FunctionDeclExpressionContext) : ASTNode = {
     val line = ctx.getStart.getLine
@@ -573,6 +577,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val args = rawArgs match {
       case a : Expression => new ExprList(a.line, a.column, Seq(a))
       case l : ExprList => l
+      case DefRes => null
     }
     new FunctionCallExpression(line, column, funcExpr, args)
   }
@@ -590,6 +595,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val args = rawArgs match {
       case a : Expression => new ExprList(a.line, a.column, Seq(implicitArg, a))
       case l : ExprList => new ExprList(l.line, l.column, implicitArg +: l.elements)
+      case DefRes => null
     }
     new FunctionCallExpression(line, column, func, args)
   }

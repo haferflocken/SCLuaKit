@@ -61,7 +61,7 @@ object SCLuaCheck extends App {
   //test(testDir)
   //println(failedFiles)
 
-  val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\Entity.lua")
+  val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
   val input = new ANTLRInputStream(new FileReader(testFile))
   val lexer = new SCLuaLexer(input)
   val tokens = new CommonTokenStream(lexer)

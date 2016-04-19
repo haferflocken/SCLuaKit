@@ -8,8 +8,8 @@ trait ASTVisitor[T] {
   def visit(n : StatementList) : T
   def visit(n : ExprList) : T
 
-  def visitList(n : StatementList) : Seq[T] = for (e <- n.elements) yield e.accept(this)
-  def visitList(n : ExprList) : Seq[T] = for (e <- n.elements) yield e.accept(this)
+  def visitList(n : StatementList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
+  def visitList(n : ExprList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
 
   // Visit statements.
   def visit(n : Chunk) : T

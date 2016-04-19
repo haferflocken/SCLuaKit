@@ -1,7 +1,7 @@
 package scluacheck.ast
 
 /**
-  * Prints the AST's structure. Methods should not have dangling newlines.
+  * Prints the AST as pseudo-Lua. Methods should not have dangling newlines.
   * The convention is that visiting an expression will not return a string with indentation on the first line,
   * but visiting a statement will.
   */
@@ -40,9 +40,7 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
   override def visit(n : ExprList) : String = throw new java.lang.Error("Not implemented")
 
   override def visit(n : Chunk) : String = {
-    if (n.statements == null)
-      return ""
-    indentStrings(visitList(n.statements), 1)
+    indentString("do") + "\n" + indentStrings(visitList(n.statements), 1) + "\n" + indentString("end")
   }
 
   override def visit(n : AssignmentStatement) : String = {
@@ -65,8 +63,10 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
 
   override def visit(n : IfStatement) : String = {
     var out = indentString("if ")
-    out += visit(n.condition) + "\n" + visit(n.thn)
-    out + "\n" + indentString("else") + visit(n.els).trim()
+    out += visit(n.condition) + " then\n" + visit(n.thn)
+    if (n.els != null)
+      out += "\n" + indentString("else ") + visit(n.els).trim() + "\n" + indentString("end")
+    out
   }
 
   override def visit(n : ReturnStatement) : String = {
