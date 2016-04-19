@@ -1,4 +1,4 @@
-// Generated from C:/Users/John/IdeaProjects/SCLuaCheck/src/scluacheck/parser\SCLua.g4 by ANTLR 4.5.1
+// Generated from C:/Users/John/Documents/GitHub/SCLuaKit/SCLuaCheck/src/scluacheck/parser\SCLua.g4 by ANTLR 4.5.1
 package scluacheck.parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -78,15 +78,155 @@ public interface SCLuaListener extends ParseTreeListener {
 	 */
 	void exitStatement(SCLuaParser.StatementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SCLuaParser#funcName}.
+	 * Enter a parse tree produced by {@link SCLuaParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 */
-	void enterFuncName(SCLuaParser.FuncNameContext ctx);
+	void enterAssignmentStatement(SCLuaParser.AssignmentStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SCLuaParser#funcName}.
+	 * Exit a parse tree produced by {@link SCLuaParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 */
-	void exitFuncName(SCLuaParser.FuncNameContext ctx);
+	void exitAssignmentStatement(SCLuaParser.AssignmentStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionCallStatement(SCLuaParser.FunctionCallStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionCallStatement(SCLuaParser.FunctionCallStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#methodCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodCallStatement(SCLuaParser.MethodCallStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#methodCallStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodCallStatement(SCLuaParser.MethodCallStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#explicitBlockStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExplicitBlockStatement(SCLuaParser.ExplicitBlockStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#explicitBlockStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExplicitBlockStatement(SCLuaParser.ExplicitBlockStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#whileStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileStatement(SCLuaParser.WhileStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#whileStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileStatement(SCLuaParser.WhileStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#repeatUntilStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterRepeatUntilStatement(SCLuaParser.RepeatUntilStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#repeatUntilStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitRepeatUntilStatement(SCLuaParser.RepeatUntilStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStatement(SCLuaParser.IfStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStatement(SCLuaParser.IfStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(SCLuaParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(SCLuaParser.ReturnStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#breakStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreakStatement(SCLuaParser.BreakStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#breakStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreakStatement(SCLuaParser.BreakStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#continueStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterContinueStatement(SCLuaParser.ContinueStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#continueStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitContinueStatement(SCLuaParser.ContinueStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#forNumericStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterForNumericStatement(SCLuaParser.ForNumericStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#forNumericStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitForNumericStatement(SCLuaParser.ForNumericStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#forEachStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterForEachStatement(SCLuaParser.ForEachStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#forEachStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitForEachStatement(SCLuaParser.ForEachStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#functionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionDeclarationStatement(SCLuaParser.FunctionDeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#functionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionDeclarationStatement(SCLuaParser.FunctionDeclarationStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#localFunctionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalFunctionDeclarationStatement(SCLuaParser.LocalFunctionDeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#localFunctionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalFunctionDeclarationStatement(SCLuaParser.LocalFunctionDeclarationStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#localVariableDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalVariableDeclarationStatement(SCLuaParser.LocalVariableDeclarationStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#localVariableDeclarationStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalVariableDeclarationStatement(SCLuaParser.LocalVariableDeclarationStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SCLuaParser#expression}.
 	 * @param ctx the parse tree
@@ -228,35 +368,25 @@ public interface SCLuaListener extends ParseTreeListener {
 	 */
 	void exitPrefixExp(SCLuaParser.PrefixExpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SCLuaParser#args}.
+	 * Enter a parse tree produced by {@link SCLuaParser#parentheticalExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterArgs(SCLuaParser.ArgsContext ctx);
+	void enterParentheticalExpression(SCLuaParser.ParentheticalExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SCLuaParser#args}.
+	 * Exit a parse tree produced by {@link SCLuaParser#parentheticalExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitArgs(SCLuaParser.ArgsContext ctx);
+	void exitParentheticalExpression(SCLuaParser.ParentheticalExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SCLuaParser#functionDecl}.
+	 * Enter a parse tree produced by {@link SCLuaParser#functionDeclExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterFunctionDecl(SCLuaParser.FunctionDeclContext ctx);
+	void enterFunctionDeclExpression(SCLuaParser.FunctionDeclExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SCLuaParser#functionDecl}.
+	 * Exit a parse tree produced by {@link SCLuaParser#functionDeclExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitFunctionDecl(SCLuaParser.FunctionDeclContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SCLuaParser#funcBody}.
-	 * @param ctx the parse tree
-	 */
-	void enterFuncBody(SCLuaParser.FuncBodyContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SCLuaParser#funcBody}.
-	 * @param ctx the parse tree
-	 */
-	void exitFuncBody(SCLuaParser.FuncBodyContext ctx);
+	void exitFunctionDeclExpression(SCLuaParser.FunctionDeclExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SCLuaParser#tableConstructor}.
 	 * @param ctx the parse tree
@@ -268,16 +398,6 @@ public interface SCLuaListener extends ParseTreeListener {
 	 */
 	void exitTableConstructor(SCLuaParser.TableConstructorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SCLuaParser#fField}.
-	 * @param ctx the parse tree
-	 */
-	void enterFField(SCLuaParser.FFieldContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SCLuaParser#fField}.
-	 * @param ctx the parse tree
-	 */
-	void exitFField(SCLuaParser.FFieldContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link SCLuaParser#upValue}.
 	 * @param ctx the parse tree
 	 */
@@ -287,6 +407,146 @@ public interface SCLuaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUpValue(SCLuaParser.UpValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#varArgsExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarArgsExpression(SCLuaParser.VarArgsExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#varArgsExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarArgsExpression(SCLuaParser.VarArgsExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#ifPartIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfPartIf(SCLuaParser.IfPartIfContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#ifPartIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfPartIf(SCLuaParser.IfPartIfContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#ifPartElseif}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfPartElseif(SCLuaParser.IfPartElseifContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#ifPartElseif}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfPartElseif(SCLuaParser.IfPartElseifContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#ifPartElse}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfPartElse(SCLuaParser.IfPartElseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#ifPartElse}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfPartElse(SCLuaParser.IfPartElseContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#funcName}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncName(SCLuaParser.FuncNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#funcName}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncName(SCLuaParser.FuncNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#methodName}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodName(SCLuaParser.MethodNameContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#methodName}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodName(SCLuaParser.MethodNameContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgs(SCLuaParser.ArgsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#args}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgs(SCLuaParser.ArgsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#funcBody}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncBody(SCLuaParser.FuncBodyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#funcBody}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncBody(SCLuaParser.FuncBodyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#equalityOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualityOp(SCLuaParser.EqualityOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#equalityOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualityOp(SCLuaParser.EqualityOpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#relationalOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterRelationalOp(SCLuaParser.RelationalOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#relationalOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitRelationalOp(SCLuaParser.RelationalOpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#addOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddOp(SCLuaParser.AddOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#addOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddOp(SCLuaParser.AddOpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#multOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultOp(SCLuaParser.MultOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#multOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultOp(SCLuaParser.MultOpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#negationOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterNegationOp(SCLuaParser.NegationOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#negationOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitNegationOp(SCLuaParser.NegationOpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#tableEntry}.
+	 * @param ctx the parse tree
+	 */
+	void enterTableEntry(SCLuaParser.TableEntryContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#tableEntry}.
+	 * @param ctx the parse tree
+	 */
+	void exitTableEntry(SCLuaParser.TableEntryContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SCLuaParser#var}.
 	 * @param ctx the parse tree
@@ -327,4 +587,44 @@ public interface SCLuaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNumericLiteral(SCLuaParser.NumericLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#prefixPartFunctionCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrefixPartFunctionCall(SCLuaParser.PrefixPartFunctionCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#prefixPartFunctionCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrefixPartFunctionCall(SCLuaParser.PrefixPartFunctionCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#prefixPartMethodCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrefixPartMethodCall(SCLuaParser.PrefixPartMethodCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#prefixPartMethodCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrefixPartMethodCall(SCLuaParser.PrefixPartMethodCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#prefixPartTableAccess}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrefixPartTableAccess(SCLuaParser.PrefixPartTableAccessContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#prefixPartTableAccess}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrefixPartTableAccess(SCLuaParser.PrefixPartTableAccessContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SCLuaParser#prefixPartDotAccess}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrefixPartDotAccess(SCLuaParser.PrefixPartDotAccessContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SCLuaParser#prefixPartDotAccess}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrefixPartDotAccess(SCLuaParser.PrefixPartDotAccessContext ctx);
 }

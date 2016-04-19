@@ -3,9 +3,9 @@ package scluacheck
 import java.io.{File, FileReader}
 
 import scala.collection.mutable.ArrayBuffer
-
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
+import scluacheck.ast.ASTPrettyPrintVisitor
 import scluacheck.parser._
 
 object SCLuaCheck extends App {
@@ -51,15 +51,24 @@ object SCLuaCheck extends App {
         return true
       }
 
-      println(tree.toStringTree(parser))
+      //println(tree.toStringTree(parser))
       return true
     }
     return true
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\Entity.lua")
-  test(testDir)
-  println(failedFiles)
+  //val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
+  //test(testDir)
+  //println(failedFiles)
+
+  val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\Entity.lua")
+  val input = new ANTLRInputStream(new FileReader(testFile))
+  val lexer = new SCLuaLexer(input)
+  val tokens = new CommonTokenStream(lexer)
+  val parser = new SCLuaParser(tokens)
+  val parseTree = parser.start()
+  val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
+  println(ASTPrettyPrintVisitor.visit(abstractSyntaxTree))
 
   // mohodata-lua/system contains a lot of the backend magic of Supreme Commander:
   // - Blueprints.lua makes blueprint magic happen and contains information on how mods work
@@ -71,10 +80,18 @@ object SCLuaCheck extends App {
 
   // mohodata-lua/globalInit.lua reveals that moho is a table of classes exported from C.
 
+  // TODO Turn the parse tree into the AST to streamline the information and do some minor code transformations.
+  // TODO Make a pretty print visitor for the AST and verify it produces valid Lua.
+  // TODO Determine what assumptions can be made safely in the existing codebase.
+  // TODO Create similar language to Lua which is safer because it enforces those assumptions, but which can be represented with the same AST.
+  // TODO Make a pretty print visitor for that AST to translate Lua into the new language.
+  // TODO Use the Lua pretty print visitor to generate Lua from the new language.
+  // TODO Cool things from below.
+
   // So now the Lua can be (mostly) lexed and parsed. Things to do with this:
   // - Identify C functions which the Lua is using (any function not defined by the Lua)
   // - Identify Lua functions which the C might be using (any function which is not called in the Lua)
-  // - Make assumption that new functions are not added to anything with names specified at runtime.
+  // - Make assumption that new functions are not added to anything with names specified at runtime
   //   - Use this to verify functions exist before they are called.
   //   - Derive interfaces from the way parameters are used in functions to say something about their type.
   //     - Use these interfaces to verify that function calls pass in compatible parameters.

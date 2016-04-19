@@ -17,34 +17,46 @@ grammar SCLua;
 start : chunk EOF ;
 
 idList  : ID (',' ID)* ;
-paramList : idList (',' '...')? | '...' ;
+paramList : idList (',' varArgsExpression)? | varArgsExpression ;
 varList : var (',' var)* ;
 expressionList : expression (',' expression)* ;
 
+// START OF MAIN AST NODES
+// vvvvvvvvvvvvvvvvvvvvvvv
 chunk : (statement ';'?)* ;
 
-// TODO build a more meaningful AST
 statement
-    : varList '=' expressionList // Assignment (or declaration of global variables)
-    | prefixExp args // Function call
-    | prefixExp ':' ID args // Method call
-    | 'do' chunk 'end' // Explicit block
-    | 'while' expression 'do' chunk 'end' // While loop
-    | 'repeat' chunk 'until' expression // Repeat-until loop (the condition may use local variables in the loop)
-    | 'if' expression 'then' chunk ('elseif' expression 'then' chunk)* ('else' chunk)? 'end' // If/then/elseif/else
-    | 'return' expressionList? // Return
-    | 'break' // Break
-    | 'continue' // Continue
-    | 'for' ID '=' expression ',' expression (',' expression)? 'do' chunk 'end' // Numeric for loop
-    | 'for' ID (',' ID)? 'in' expression 'do' chunk 'end' // Foreach loop
-    | 'function' funcName funcBody // Function declaration
-    | 'local' 'function' ID funcBody // Local function declaration
-    | 'local' idList ('=' expressionList)? ; // Local variable declaration and initialization
+    : assignmentStatement
+    | functionCallStatement
+    | methodCallStatement
+    | explicitBlockStatement
+    | whileStatement
+    | repeatUntilStatement
+    | ifStatement
+    | returnStatement
+    | breakStatement
+    | continueStatement
+    | forNumericStatement
+    | forEachStatement
+    | functionDeclarationStatement
+    | localFunctionDeclarationStatement
+    | localVariableDeclarationStatement ;
 
-funcName
-    : ID
-    | ID '.' ID
-    | ID ':' ID ;
+assignmentStatement : varList '=' expressionList ; // Also declares global variables.
+functionCallStatement : prefixExp args ;
+methodCallStatement : prefixExp ':' ID args ;
+explicitBlockStatement : 'do' chunk 'end' ;
+whileStatement : 'while' expression 'do' chunk 'end' ;
+repeatUntilStatement : 'repeat' chunk 'until' expression ;
+ifStatement : ifPartIf ifPartElseif* ifPartElse? 'end' ;
+returnStatement : 'return' expressionList? ;
+breakStatement : 'break' ;
+continueStatement : 'continue' ;
+forNumericStatement : 'for' ID '=' expression ',' expression (',' expression)? 'do' chunk 'end';
+forEachStatement : 'for' ID (',' ID)? 'in' expression 'do' chunk 'end' ;
+functionDeclarationStatement : 'function' funcName funcBody ;
+localFunctionDeclarationStatement : 'local' 'function' ID funcBody ;
+localVariableDeclarationStatement : 'local' idList ('=' expressionList)? ;
 
 // Logical operator precedence.
 expression : orExpression ;
@@ -56,47 +68,68 @@ bitwiseOrExpression : bitwiseAndExpression ('|' bitwiseAndExpression)* ;
 bitwiseAndExpression : equalityExpression ('&' equalityExpression)* ;
 
 // Equality and relational operator precedence.
-equalityExpression : relationalExpression (('=='|'~='|'!=') relationalExpression)* ;
-relationalExpression : concatExpression (('<'|'>'|'<='|'>=') concatExpression)* ;
+equalityExpression : relationalExpression (equalityOp relationalExpression)* ;
+relationalExpression : concatExpression (relationalOp concatExpression)* ;
 
 // Concatenation is between inequality and addition in precedence.
 concatExpression : addExpression ('..' addExpression)* ;
 
 // Arithmetic operator precedence.
-addExpression : multExpression (('+'|'-') multExpression)* ;
-multExpression : negationExpression (('*'|'/'|'%') negationExpression)* ;
-negationExpression : ('-'|'not') negationExpression | powerExpression ; // 'not' is not arithmetic but belongs here in precedence
+addExpression : multExpression (addOp multExpression)* ;
+multExpression : negationExpression (multOp negationExpression)* ;
+negationExpression : negationOp negationExpression | powerExpression ; // 'not' is not arithmetic but belongs here in precedence
 powerExpression : primaryExpression ('^' primaryExpression)* ;
 
 primaryExpression
     : prefixExp
     | literal // Literal
-    | functionDecl // Function declaration
+    | functionDeclExpression // Function declaration
     | tableConstructor // Table constructor
     | upValue // Upvalue
-    | '...' ; // Varargs
+    | varArgsExpression ; // Varargs
 
 prefixExp
-    : prefixExp args // Function call
-    | prefixExp ':' ID args // Method call
-    | prefixExp '[' expression ']' // Table access
-    | prefixExp '.' ID // Table access sugar
-    | '(' expression ')' // Parenthetical expression
-    | ID ; // Identifier
+    : prefixExp (prefixPartFunctionCall | prefixPartMethodCall | prefixPartTableAccess | prefixPartDotAccess)
+    | parentheticalExpression
+    | ID ;
+
+parentheticalExpression : '(' expression ')';
+
+functionDeclExpression : 'function' funcBody ;
+
+tableConstructor : '{' (tableEntry ((','|';') tableEntry)* ','?)? '}' ;
+
+upValue : '%' ID ;
+
+varArgsExpression : '...' ;
+// ^^^^^^^^^^^^^^^^^^^^^
+// END OF MAIN AST NODES
+
+ifPartIf : 'if' expression 'then' chunk ;
+ifPartElseif : 'elseif' expression 'then' chunk ;
+ifPartElse : 'else' chunk ;
+
+funcName
+    : ID
+    | ID '.' ID
+    | methodName ;
+
+methodName : ID ':' ID ;
 
 args
     : '(' expressionList? ')' // Standard function argument syntax. Ex: foo(a, b, c)
     | tableConstructor // Table arg for unary function syntax. Ex: foo {a, b, c}
     | STRING_LITERAL ; // String literal arg for unary function syntax. Ex: foo 'bar'
 
-functionDecl : 'function' funcBody ;
-
 funcBody : '(' paramList? ')' chunk 'end' ;
 
-tableConstructor : '{' ((fField | expression) ((','|';') (fField | expression))* ','?)? '}' ;
-fField : '[' expression ']' '=' expression | ID '=' expression ;
+equalityOp : '==' | '~=' | '!=' ;
+relationalOp : '<' | '>' | '<=' | '>=' ;
+addOp : '+' | '-' ;
+multOp : '*' | '/' | '%' ;
+negationOp : '-' | 'not' ;
 
-upValue : '%' ID ;
+tableEntry : '[' expression ']' '=' expression | ID '=' expression | expression;
 
 var
     : prefixExp '[' expression ']'
@@ -115,6 +148,11 @@ numericLiteral
     : HEX_LITERAL
     | INT_LITERAL
     | FLOAT_LITERAL ;
+
+prefixPartFunctionCall : args ;
+prefixPartMethodCall : ':' ID args ;
+prefixPartTableAccess : '[' expression ']';
+prefixPartDotAccess : '.' ID ;
 
 // Lexer rules start with an uppercase letter.
 

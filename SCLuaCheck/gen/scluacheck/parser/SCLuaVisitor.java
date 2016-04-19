@@ -1,4 +1,4 @@
-// Generated from C:/Users/John/IdeaProjects/SCLuaCheck/src/scluacheck/parser\SCLua.g4 by ANTLR 4.5.1
+// Generated from C:/Users/John/Documents/GitHub/SCLuaKit/SCLuaCheck/src/scluacheck/parser\SCLua.g4 by ANTLR 4.5.1
 package scluacheck.parser;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -53,11 +53,95 @@ public interface SCLuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(SCLuaParser.StatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SCLuaParser#funcName}.
+	 * Visit a parse tree produced by {@link SCLuaParser#assignmentStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFuncName(SCLuaParser.FuncNameContext ctx);
+	T visitAssignmentStatement(SCLuaParser.AssignmentStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#functionCallStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallStatement(SCLuaParser.FunctionCallStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#methodCallStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMethodCallStatement(SCLuaParser.MethodCallStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#explicitBlockStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExplicitBlockStatement(SCLuaParser.ExplicitBlockStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#whileStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileStatement(SCLuaParser.WhileStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#repeatUntilStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeatUntilStatement(SCLuaParser.RepeatUntilStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#ifStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfStatement(SCLuaParser.IfStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#returnStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnStatement(SCLuaParser.ReturnStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#breakStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreakStatement(SCLuaParser.BreakStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#continueStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitContinueStatement(SCLuaParser.ContinueStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#forNumericStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForNumericStatement(SCLuaParser.ForNumericStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#forEachStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForEachStatement(SCLuaParser.ForEachStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#functionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionDeclarationStatement(SCLuaParser.FunctionDeclarationStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#localFunctionDeclarationStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalFunctionDeclarationStatement(SCLuaParser.LocalFunctionDeclarationStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#localVariableDeclarationStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalVariableDeclarationStatement(SCLuaParser.LocalVariableDeclarationStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SCLuaParser#expression}.
 	 * @param ctx the parse tree
@@ -143,23 +227,17 @@ public interface SCLuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrefixExp(SCLuaParser.PrefixExpContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SCLuaParser#args}.
+	 * Visit a parse tree produced by {@link SCLuaParser#parentheticalExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArgs(SCLuaParser.ArgsContext ctx);
+	T visitParentheticalExpression(SCLuaParser.ParentheticalExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SCLuaParser#functionDecl}.
+	 * Visit a parse tree produced by {@link SCLuaParser#functionDeclExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunctionDecl(SCLuaParser.FunctionDeclContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SCLuaParser#funcBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFuncBody(SCLuaParser.FuncBodyContext ctx);
+	T visitFunctionDeclExpression(SCLuaParser.FunctionDeclExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SCLuaParser#tableConstructor}.
 	 * @param ctx the parse tree
@@ -167,17 +245,95 @@ public interface SCLuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTableConstructor(SCLuaParser.TableConstructorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SCLuaParser#fField}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFField(SCLuaParser.FFieldContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link SCLuaParser#upValue}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitUpValue(SCLuaParser.UpValueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#varArgsExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarArgsExpression(SCLuaParser.VarArgsExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#ifPartIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfPartIf(SCLuaParser.IfPartIfContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#ifPartElseif}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfPartElseif(SCLuaParser.IfPartElseifContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#ifPartElse}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfPartElse(SCLuaParser.IfPartElseContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#funcName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncName(SCLuaParser.FuncNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#methodName}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMethodName(SCLuaParser.MethodNameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#args}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgs(SCLuaParser.ArgsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#funcBody}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncBody(SCLuaParser.FuncBodyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#equalityOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualityOp(SCLuaParser.EqualityOpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#relationalOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRelationalOp(SCLuaParser.RelationalOpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#addOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddOp(SCLuaParser.AddOpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#multOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultOp(SCLuaParser.MultOpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#negationOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNegationOp(SCLuaParser.NegationOpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#tableEntry}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTableEntry(SCLuaParser.TableEntryContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SCLuaParser#var}.
 	 * @param ctx the parse tree
@@ -202,4 +358,28 @@ public interface SCLuaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNumericLiteral(SCLuaParser.NumericLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#prefixPartFunctionCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixPartFunctionCall(SCLuaParser.PrefixPartFunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#prefixPartMethodCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixPartMethodCall(SCLuaParser.PrefixPartMethodCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#prefixPartTableAccess}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixPartTableAccess(SCLuaParser.PrefixPartTableAccessContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SCLuaParser#prefixPartDotAccess}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixPartDotAccess(SCLuaParser.PrefixPartDotAccessContext ctx);
 }
