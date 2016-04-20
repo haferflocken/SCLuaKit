@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c00357f7-8908-4d0e-888b-115f28acbfe5" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" afterPath="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
     </list>
     <ignored path="SCLuaCheck.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,18 +32,18 @@
           <file leaf-file-name="SCLuaCheck.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="136">
-                  <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+                <state relative-caret-position="119">
+                  <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ASTFromPTVisitor.scala" pinned="false" current-in-tab="false">
+          <file leaf-file-name="ASTFromPTVisitor.scala" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="10506">
-                  <caret line="618" column="4" selection-start-line="618" selection-start-column="4" selection-end-line="618" selection-end-column="4" />
+                <state relative-caret-position="163">
+                  <caret line="182" column="59" selection-start-line="182" selection-start-column="59" selection-end-line="182" selection-end-column="59" />
                   <folding>
                     <element signature="e#27#60#0" expanded="true" />
                   </folding>
@@ -48,11 +51,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ASTPrettyPrintVisitor.scala" pinned="false" current-in-tab="true">
+          <file leaf-file-name="ASTPrettyPrintVisitor.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1870">
-                  <caret line="110" column="0" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+                <state relative-caret-position="419">
+                  <caret line="111" column="0" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -62,21 +65,21 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="SCLua.g4" pinned="false" current-in-tab="false">
+          <file leaf-file-name="SCLua.g4" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2051">
-                  <caret line="156" column="46" selection-start-line="156" selection-start-column="46" selection-end-line="156" selection-end-column="46" />
+                <state relative-caret-position="1048">
+                  <caret line="160" column="40" selection-start-line="160" selection-start-column="40" selection-end-line="160" selection-end-column="40" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ASTNode.scala" pinned="false" current-in-tab="true">
+          <file leaf-file-name="ASTNode.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="357">
-                  <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+                <state relative-caret-position="538">
+                  <caret line="163" column="66" selection-start-line="163" selection-start-column="66" selection-end-line="163" selection-end-column="66" />
                   <folding />
                 </state>
               </provider>
@@ -106,11 +109,11 @@
         <option value="$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4" />
         <option value="$PROJECT_DIR$/gen/scluacheck/parser/SCLuaVisitor.java" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTStructurePrintVisitor.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
       </list>
     </option>
   </component>
@@ -779,13 +782,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/java-libraries/antlr-4.5.3-complete.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/java-libraries/antlr-4.5.3-complete.jar!/org/antlr/v4/runtime/tree/RuleNode.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -843,45 +839,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2051">
-          <caret line="156" column="46" selection-start-line="156" selection-start-column="46" selection-end-line="156" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10506">
-          <caret line="618" column="4" selection-start-line="618" selection-start-column="4" selection-end-line="618" selection-end-column="4" />
-          <folding>
-            <element signature="e#27#60#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state relative-caret-position="538">
+          <caret line="163" column="66" selection-start-line="163" selection-start-column="66" selection-end-line="163" selection-end-column="66" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1870">
-          <caret line="110" column="0" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
+        <state relative-caret-position="419">
+          <caret line="111" column="0" selection-start-line="111" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/java-libraries/antlr-4.5.3-complete.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1048">
+          <caret line="160" column="40" selection-start-line="160" selection-start-column="40" selection-end-line="160" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="182" column="59" selection-start-line="182" selection-start-column="59" selection-end-line="182" selection-end-column="59" />
+          <folding>
+            <element signature="e#27#60#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

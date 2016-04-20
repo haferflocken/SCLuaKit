@@ -123,7 +123,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
   override def visitReturnStatement(ctx : ReturnStatementContext) : ASTNode = {
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
-    val exprList = visitExpressionList(ctx.expressionList).asInstanceOf[ExprList]
+    val exprList = if (ctx.expressionList == null) null else visitExpressionList(ctx.expressionList).asInstanceOf[ExprList]
     new ReturnStatement(line, column, exprList)
   }
 
@@ -176,8 +176,13 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val binding = visitFuncName(ctx.funcName).asInstanceOf[Expression]
 
     // Add the implicit parameter if this is a method call.
-    val params = if (ctx.funcName.methodName != null) new IdentifierExpression(line, column, "self") +: rawParams
-                 else rawParams
+    val params = if (ctx.funcName.methodName != null) {
+      if (rawParams != null)
+        new IdentifierExpression(line, column, "self") +: rawParams
+      else
+        Seq(new IdentifierExpression(line, column, "self"))
+    } else
+      rawParams
 
     val funcDeclExpr = new FunctionDeclarationExpression(line, column, params, hasVarArgs, body)
     new AssignmentStatement(line, column, new ExprList(line, column, Seq(binding)), new ExprList(line, column, Seq(funcDeclExpr)))
@@ -562,10 +567,11 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
       ArithmeticBinop.POWER
 
   private def visitFuncDecl(ctx : FuncBodyContext) : (Seq[IdentifierExpression], Boolean, StatementList) = {
-    val rawParams = visitParamList(ctx.paramList)
+    val rawParams = if (ctx.paramList == null) null else visitParamList(ctx.paramList)
     var params : Seq[IdentifierExpression] = null
     var hasVarArgs = false
     rawParams match {
+      case null => // Do nothing.
       case l : ExprList if l.elements.nonEmpty && l.elements.last.isInstanceOf[VarArgsExpression] => {
         params = for(e <- l.elements.slice(0, l.elements.size - 1)) yield e.asInstanceOf[IdentifierExpression]
         hasVarArgs = true
@@ -611,12 +617,20 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
   }
 
   private def unquote(s : String) : String = {
-    if (s.charAt(0) == '"' || s.charAt(0) == '\'')
-      s.substring(1, s.length() - 1)
+    // We can just return from a doublequoted string because they are already escaped correctly.
+    if (s.charAt(0) == '"')
+      return s.substring(1, s.length() - 1)
+
+    // If the string was singlequoted, we need to unescape single quotes and escape double quotes.
+    if (s.charAt(0) == '\'') {
+      var inner = s.substring(1, s.length() - 1)
+      inner = inner.replaceAll("\\\\'", "'")
+      return inner.replaceAll("\"", "\\\\\"")
+    }
+
     // If it doesn't start with a single or double quote, it must start with a [[.
-    else
-      s.substring(2, s.length() - 2)
-    // TODO escape characters that now need to be escape (because unquote implicitly converts the string to a doublequoted string)
+    // TODO I'm not sure if the [[ strings need any escape processing.
+    s.substring(2, s.length() - 2)
   }
 
   // Help AbstractParseTreeVisitor do some of our work.

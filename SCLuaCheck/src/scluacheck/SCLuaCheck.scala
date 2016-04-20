@@ -5,7 +5,6 @@ import java.io.{File, FileReader}
 import scala.collection.mutable.ArrayBuffer
 
 import org.antlr.v4.runtime._
-import org.antlr.v4.runtime.tree._
 
 import scluacheck.ast.ASTPrettyPrintVisitor
 import scluacheck.parser._
@@ -45,7 +44,8 @@ object SCLuaCheck extends App {
 
       val tokens = new CommonTokenStream(lexer)
       val parser = new SCLuaParser(tokens)
-      val tree : ParseTree = parser.start()
+      val parseTree = parser.start()
+      val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
 
       if (parser.getNumberOfSyntaxErrors > 0) {
         //println(f.getAbsolutePath)
@@ -59,18 +59,18 @@ object SCLuaCheck extends App {
     return true
   }
 
-  //val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
-  //test(testDir)
-  //println(failedFiles)
+  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
+  test(testDir)
+  println(failedFiles)
 
-  val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
+  /*val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
   val input = new ANTLRInputStream(new FileReader(testFile))
   val lexer = new SCLuaLexer(input)
   val tokens = new CommonTokenStream(lexer)
   val parser = new SCLuaParser(tokens)
   val parseTree = parser.start()
   val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
-  println(ASTPrettyPrintVisitor.visit(abstractSyntaxTree))
+  println(ASTPrettyPrintVisitor.visit(abstractSyntaxTree))*/
 
   // mohodata-lua/system contains a lot of the backend magic of Supreme Commander:
   // - Blueprints.lua makes blueprint magic happen and contains information on how mods work
@@ -82,11 +82,11 @@ object SCLuaCheck extends App {
 
   // mohodata-lua/globalInit.lua reveals that moho is a table of classes exported from C.
 
-  // TODO Turn the parse tree into the AST to streamline the information and do some minor code transformations.
   // TODO Make a pretty print visitor for the AST and verify it produces valid Lua.
   // TODO Determine what assumptions can be made safely in the existing codebase.
-  // TODO Create similar language to Lua which is safer because it enforces those assumptions, but which can be represented with the same AST.
-  // TODO Make a pretty print visitor for that AST to translate Lua into the new language.
+  // TODO Create similar language to Lua which is safer because it enforces those assumptions, but which can be represented with a stricter AST.
+  // TODO Create visitors which can translate between the Lua AST and the strict AST.
+  // TODO Make a pretty print visitor for the strict AST to translate Lua into the new language.
   // TODO Use the Lua pretty print visitor to generate Lua from the new language.
   // TODO Cool things from below.
 

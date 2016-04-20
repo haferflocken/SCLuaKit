@@ -98,9 +98,17 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
   override def visit(n : StringLiteral) : String =  "\"" + n.v + "\""
   override def visit(n : NilLiteral) : String = "nil"
 
-  // TODO varargs
-  override def visit(n : FunctionDeclarationExpression) : String =
-    "function(" + commaSeparate(n.params.map((e : IdentifierExpression) => visit(e))) + ")\n" + indentVisitList(n.body) + "\n" + "end"
+  override def visit(n : FunctionDeclarationExpression) : String = {
+    var out = "function("
+    if (n.params != null) {
+      out += commaSeparate(n.params.map((e : IdentifierExpression) => visit(e)))
+      if (n.hasVarArgs)
+        out += ", ..."
+    } else if (n.hasVarArgs) {
+      out += "..."
+    }
+    out + ")\n" + indentVisitList(n.body) + "\n" + "end"
+  }
 
   override def visit(n : TableConstructorExpression) : String = {
     if (n.keys.elements.isEmpty)
