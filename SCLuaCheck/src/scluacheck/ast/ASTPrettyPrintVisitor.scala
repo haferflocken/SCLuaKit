@@ -7,39 +7,29 @@ package scluacheck.ast
   */
 object ASTPrettyPrintVisitor extends ASTVisitor[String] {
 
-  private def indentStrings(inStrs : Seq[String], indent : Int) : String = {
+  private def join(strs : Seq[String], separator : String) : String = {
+    var out = ""
+    if (strs.nonEmpty) {
+      out += strs.head
+      for (s <- strs.slice(1, strs.size))
+        out += separator + s
+    }
+    out
+  }
+
+  private def indentStrings(inStrs : Seq[String]) : String = {
     val s = (for (i <- inStrs) yield i.split("\n")).flatten
-
-    var in = ""
-    for (i <- Range(0, indent))
-      in += "  "
-
-    var out = ""
-    if (s.nonEmpty) {
-      out += in + s.head
-      for (i <- s.slice(1, s.size)) {
-        out += "\n" + in + i
-      }
-    }
-    out
+    "  " + join(s, "\n  ")
   }
 
-  private def indentVisitList(l : StatementList) : String = indentStrings(visitList(l), 1)
+  private def indentVisitList(l : StatementList) : String = indentStrings(visitList(l))
 
-  private def commaSeparate(s : Seq[String]) : String = {
-    var out = ""
-    if (s.nonEmpty) {
-      out += s.head
-      for (i <- s.slice(1, s.size))
-        out += ", " + i
-    }
-    out
-  }
+  private def commaSeparate(s : Seq[String]) : String = join(s, ", ")
 
   override def visit(n : StatementList) : String = throw new java.lang.Error("Not implemented")
   override def visit(n : ExprList) : String = throw new java.lang.Error("Not implemented")
 
-  override def visit(n : FileNode) : String = indentStrings(visitList(n.statements), 0)
+  override def visit(n : FileNode) : String = join(visitList(n.statements), "\n")
 
   override def visit(n : AssignmentStatement) : String = {
     val vars = visitList(n.vars)
@@ -121,9 +111,9 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
 
     var out = ""
     if (keys.nonEmpty) {
-      out += indentStrings(Seq(keys.head + " = " + values.head), 1)
+      out += indentStrings(Seq(keys.head + " = " + values.head))
       for (i <- Range(1, keys.size)) {
-        out += ",\n" + indentStrings(Seq(keys(i) + " = " + values(i)), 1)
+        out += ",\n" + indentStrings(Seq(keys(i) + " = " + values(i)))
       }
     }
 
