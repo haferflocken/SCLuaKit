@@ -3,8 +3,10 @@ package scluacheck
 import java.io.{File, FileReader}
 
 import scala.collection.mutable.ArrayBuffer
+
 import org.antlr.v4.runtime._
 import org.antlr.v4.runtime.tree._
+
 import scluacheck.ast.ASTPrettyPrintVisitor
 import scluacheck.parser._
 

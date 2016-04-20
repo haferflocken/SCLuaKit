@@ -40,13 +40,13 @@ object ArithmeticBinop extends Enumeration {
   val ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO, POWER = Value
 }
 
+class FileNode(val statements : StatementList) extends ASTNode(0, 0) {
+  override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
+}
+
 /*
  * STATEMENTS
  */
-
-class Chunk(line : Int, column : Int, val statements : StatementList) extends Statement(line, column) {
-  override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
-}
 
 class AssignmentStatement(line : Int, column : Int, val vars : ExprList, val values : ExprList) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
@@ -56,16 +56,20 @@ class FunctionCallStatement(line : Int, column : Int, val call : FunctionCallExp
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class WhileStatement(line : Int, column : Int, val condition : Expression, val body : Chunk) extends Statement(line, column) {
+class ExplicitBlockStatement(line : Int, column : Int, val statements : StatementList) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class RepeatUntilStatement(line : Int, column : Int, val body : Chunk, val condition : Expression) extends Statement(line, column) {
+class WhileStatement(line : Int, column : Int, val condition : Expression, val body : StatementList) extends Statement(line, column) {
+  override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
+}
+
+class RepeatUntilStatement(line : Int, column : Int, val body : StatementList, val condition : Expression) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
 // For if/elseif/else, do IfStatement(..., ..., IfStatement(..., ..., Chunk(...)))
-class IfStatement(line : Int, column : Int, val condition : Expression, val thn : Chunk, val els : Statement) extends Statement(line, column) {
+class IfStatement(line : Int, column : Int, val condition : Expression, val thn : StatementList, val els : Statement) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
@@ -81,15 +85,15 @@ class ContinueStatement(line : Int, column : Int) extends Statement(line, column
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class ForNumericStatement(line : Int, column : Int, val index : IdentifierExpression, val start : Expression, val end : Expression, val inc : Expression, val body : Chunk) extends Statement(line, column) {
+class ForNumericStatement(line : Int, column : Int, val index : IdentifierExpression, val start : Expression, val end : Expression, val inc : Expression, val body : StatementList) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class ForEachStatement(line : Int, column : Int, val i1 : IdentifierExpression, val i2 : IdentifierExpression, val collection : Expression, val body : Chunk) extends Statement(line, column) {
+class ForEachStatement(line : Int, column : Int, val i1 : IdentifierExpression, val i2 : IdentifierExpression, val collection : Expression, val body : StatementList) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class LocalVariableDeclarationStatement(line : Int, column : Int, val names : Seq[IdentifierExpression]) extends Statement(line, column) {
+class LocalVariableDeclarationStatement(line : Int, column : Int, val names : Seq[IdentifierExpression], val values : ExprList) extends Statement(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
@@ -157,7 +161,7 @@ class NilLiteral(line : Int, column : Int) extends Expression(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 
-class FunctionDeclarationExpression(line : Int, column : Int, val params : Seq[IdentifierExpression], val hasVarArgs : Boolean, val body : Chunk) extends Expression(line, column) {
+class FunctionDeclarationExpression(line : Int, column : Int, val params : Seq[IdentifierExpression], val hasVarArgs : Boolean, val body : StatementList) extends Expression(line, column) {
   override def accept[T](visitor : ASTVisitor[T]) : T = visitor.visit(this)
 }
 

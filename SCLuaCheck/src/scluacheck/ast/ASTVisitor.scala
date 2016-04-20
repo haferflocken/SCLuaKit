@@ -11,10 +11,12 @@ trait ASTVisitor[T] {
   def visitList(n : StatementList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
   def visitList(n : ExprList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
 
+  def visit(n : FileNode) : T
+
   // Visit statements.
-  def visit(n : Chunk) : T
   def visit(n : AssignmentStatement) : T
   def visit(n : FunctionCallStatement) : T
+  def visit(n : ExplicitBlockStatement) : T
   def visit(n : WhileStatement) : T
   def visit(n : RepeatUntilStatement) : T
   def visit(n : IfStatement) : T

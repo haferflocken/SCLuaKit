@@ -1,20 +1,18 @@
 package scluacheck.parser
 
-import scala.collection.mutable.ArrayBuffer
-
 import org.antlr.v4.runtime.Token
-import org.antlr.v4.runtime.tree.{AbstractParseTreeVisitor, ErrorNode, ParseTree, RuleNode, TerminalNode}
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor
 
 import scluacheck.ast._
-import scluacheck.parser.SCLuaParser.{OrExpressionContext, VarListContext, _}
+import scluacheck.parser.SCLuaParser._
 
 /**
   * Visits a parse tree and spits out an abstract syntax tree.
-  * This file is layed out to match SCLua.g4
+  * This file is laid out to match SCLua.g4
   */
 object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisitor[ASTNode] {
 
-  override def visitStart(ctx : StartContext) : ASTNode = visitChunk(ctx.chunk())
+  override def visitStart(ctx : StartContext) : ASTNode = new FileNode(visitChunk(ctx.chunk()).asInstanceOf[StatementList])
 
   override def visitIdList(ctx : IdListContext) : ASTNode = {
     val line = ctx.getStart.getLine
@@ -51,8 +49,8 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val column = ctx.getStart.getCharPositionInLine
     val stats = visitChildren(ctx)
     stats match {
-      case l : StatementList => new Chunk(line, column, l)
-      case DefRes => new Chunk(line, column, null)
+      case l : StatementList => l
+      case DefRes => null
     }
   }
 
@@ -78,20 +76,24 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     new FunctionCallStatement(line, column, visitMethodCall(ctx.prefixExp, ctx.ID.getSymbol, ctx.args))
   }
 
-  override def visitExplicitBlockStatement(ctx : ExplicitBlockStatementContext) : ASTNode = visitChunk(ctx.chunk)
+  override def visitExplicitBlockStatement(ctx : ExplicitBlockStatementContext) : ASTNode = {
+    val line = ctx.getStart.getLine
+    val column = ctx.getStart.getCharPositionInLine
+    new ExplicitBlockStatement(line, column, visitChunk(ctx.chunk).asInstanceOf[StatementList])
+  }
 
   override def visitWhileStatement(ctx : WhileStatementContext) : ASTNode = {
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
     val condition = visitExpression(ctx.expression()).asInstanceOf[Expression]
-    val body = visitChunk(ctx.chunk()).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk()).asInstanceOf[StatementList]
     new WhileStatement(line, column, condition, body)
   }
 
   override def visitRepeatUntilStatement(ctx : RepeatUntilStatementContext) : ASTNode = {
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     val condition = visitExpression(ctx.expression).asInstanceOf[Expression]
     new RepeatUntilStatement(line, column, body, condition)
   }
@@ -146,7 +148,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val end = visitExpression(ctx.expression(1)).asInstanceOf[Expression]
     val inc = if (ctx.expression.size > 2) visitExpression(ctx.expression(2)).asInstanceOf[Expression]
               else new NumericLiteral(line, column, 1)
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     new ForNumericStatement(line, column, index, start, end, inc, body)
   }
 
@@ -161,7 +163,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
       new IdentifierExpression(index2Symbol.getLine, index2Symbol.getCharPositionInLine, index2Symbol.getText)
     }
     val collection = visitExpression(ctx.expression).asInstanceOf[Expression]
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     new ForEachStatement(line, column, index1, index2, collection, body)
   }
 
@@ -190,7 +192,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val binding = new IdentifierExpression(ctx.ID.getSymbol.getLine, ctx.ID.getSymbol.getCharPositionInLine, ctx.ID.getText)
 
     val funcDeclExpr = new FunctionDeclarationExpression(line, column, params, hasVarArgs, body)
-    val localDecl = new LocalVariableDeclarationStatement(line, column, Seq[IdentifierExpression](binding))
+    val localDecl = new LocalVariableDeclarationStatement(line, column, Seq[IdentifierExpression](binding), null)
     val assignment = new AssignmentStatement(line, column, new ExprList(line, column, Seq(binding)), new ExprList(line, column, Seq(funcDeclExpr)))
 
     // The sugar expands into a local declaration statement followed by an assignment statement.
@@ -202,8 +204,12 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val column = ctx.getStart.getCharPositionInLine
     val idExprs = visitIdList(ctx.idList).asInstanceOf[ExprList]
     val ids = for (e <- idExprs.elements) yield e.asInstanceOf[IdentifierExpression]
-    // TODO deal with the expressions assigned into the locals
-    new LocalVariableDeclarationStatement(line, column, ids)
+
+    // Local definitions may have assignments.
+    if (ctx.expressionList == null)
+      return new LocalVariableDeclarationStatement(line, column, ids, null)
+    val values = visitExpressionList(ctx.expressionList).asInstanceOf[ExprList]
+    new LocalVariableDeclarationStatement(line, column, ids, values)
   }
 
   override def visitExpression(ctx : ExpressionContext) : ASTNode = {
@@ -385,7 +391,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
     val condition = visitExpression(ctx.expression).asInstanceOf[Expression]
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     new IfStatement(line, column, condition, body, null)
   }
 
@@ -394,12 +400,16 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
     val condition = visitExpression(ctx.expression).asInstanceOf[Expression]
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     new IfStatement(line, column, condition, body, null)
   }
 
   // Returns a chunk which represents the else clause of an if statement.
-  override def visitIfPartElse(ctx : IfPartElseContext) : ASTNode = visitChunk(ctx.chunk)
+  override def visitIfPartElse(ctx : IfPartElseContext) : ASTNode = {
+    val line = ctx.getStart.getLine
+    val column = ctx.getStart.getCharPositionInLine
+    new ExplicitBlockStatement(line, column, visitChunk(ctx.chunk).asInstanceOf[StatementList])
+  }
 
   override def visitFuncName(ctx : FuncNameContext) : ASTNode = {
     if (ctx.methodName != null)
@@ -427,7 +437,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     if (ctx.STRING_LITERAL != null) {
       val line = ctx.getStart.getLine
       val column = ctx.getStart.getCharPositionInLine
-      return new StringLiteral(line, column, ctx.STRING_LITERAL.getText)
+      return new StringLiteral(line, column, unquote(ctx.STRING_LITERAL.getText))
     }
     visitChildren(ctx)
   }
@@ -472,7 +482,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val line = ctx.getStart.getLine
     val column = ctx.getStart.getCharPositionInLine
     if (ctx.STRING_LITERAL != null)
-      return new StringLiteral(line, column, ctx.STRING_LITERAL.getText)
+      return new StringLiteral(line, column, unquote(ctx.STRING_LITERAL.getText))
     new NilLiteral(line, column)
   }
 
@@ -551,7 +561,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     else // if (s.equals("^"))
       ArithmeticBinop.POWER
 
-  private def visitFuncDecl(ctx : FuncBodyContext) : (Seq[IdentifierExpression], Boolean, Chunk) = {
+  private def visitFuncDecl(ctx : FuncBodyContext) : (Seq[IdentifierExpression], Boolean, StatementList) = {
     val rawParams = visitParamList(ctx.paramList)
     var params : Seq[IdentifierExpression] = null
     var hasVarArgs = false
@@ -564,7 +574,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
       case l : ExprList => params = Seq[IdentifierExpression]()
       case v : VarArgsExpression => hasVarArgs = true
     }
-    val body = visitChunk(ctx.chunk).asInstanceOf[Chunk]
+    val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     (params, hasVarArgs, body)
   }
 
@@ -598,6 +608,15 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
       case DefRes => null
     }
     new FunctionCallExpression(line, column, func, args)
+  }
+
+  private def unquote(s : String) : String = {
+    if (s.charAt(0) == '"' || s.charAt(0) == '\'')
+      s.substring(1, s.length() - 1)
+    // If it doesn't start with a single or double quote, it must start with a [[.
+    else
+      s.substring(2, s.length() - 2)
+    // TODO escape characters that now need to be escape (because unquote implicitly converts the string to a doublequoted string)
   }
 
   // Help AbstractParseTreeVisitor do some of our work.

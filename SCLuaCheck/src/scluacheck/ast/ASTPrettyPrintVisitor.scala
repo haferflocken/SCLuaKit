@@ -6,25 +6,25 @@ package scluacheck.ast
   * but visiting a statement will.
   */
 object ASTPrettyPrintVisitor extends ASTVisitor[String] {
-  private var indent : Int = 0
 
-  private def indentString(s : String) : String = {
-    val parts = s.split("\n")
-    indentStrings(parts)
-  }
+  private def indentStrings(inStrs : Seq[String], indent : Int) : String = {
+    val s = (for (i <- inStrs) yield i.split("\n")).flatten
 
-  private def indentStrings(s : Seq[String], extra : Int = 0) : String = {
     var in = ""
-    for (i <- Range(0, indent + extra))
+    for (i <- Range(0, indent))
       in += "  "
+
     var out = ""
     if (s.nonEmpty) {
       out += in + s.head
-      for (i <- s.slice(1, s.size))
+      for (i <- s.slice(1, s.size)) {
         out += "\n" + in + i
+      }
     }
     out
   }
+
+  private def indentVisitList(l : StatementList) : String = indentStrings(visitList(l), 1)
 
   private def commaSeparate(s : Seq[String]) : String = {
     var out = ""
@@ -39,63 +39,58 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
   override def visit(n : StatementList) : String = throw new java.lang.Error("Not implemented")
   override def visit(n : ExprList) : String = throw new java.lang.Error("Not implemented")
 
-  override def visit(n : Chunk) : String = {
-    indentString("do") + "\n" + indentStrings(visitList(n.statements), 1) + "\n" + indentString("end")
-  }
+  override def visit(n : FileNode) : String = indentStrings(visitList(n.statements), 0)
 
   override def visit(n : AssignmentStatement) : String = {
-    val oldIndent = indent
-    indent = 0
     val vars = visitList(n.vars)
     val values = visitList(n.values)
-    indent = oldIndent
 
-    indentString(commaSeparate(vars) + " = " + commaSeparate(values))
+    commaSeparate(vars) + " = " + commaSeparate(values)
   }
 
   override def visit(n : FunctionCallStatement) : String = visit(n.call)
 
+  override def visit(n : ExplicitBlockStatement) : String = {
+    "do" + "\n" + indentVisitList(n.statements) + "\n" + "end"
+  }
+
   override def visit(n : WhileStatement) : String =
-    indentString("while ") + visit(n.condition) + "\n" + visit(n.body)
+    "while " + visit(n.condition) + " do\n" + indentVisitList(n.body) + "\n" + "end"
 
   override def visit(n : RepeatUntilStatement) : String =
-    indentString("repeat") + "\n" + visit(n.body) + "\n" + indentString("until ") + visit(n.condition)
+    "repeat" + "\n" + indentVisitList(n.body) + "\n" + "until " + visit(n.condition)
 
   override def visit(n : IfStatement) : String = {
-    var out = indentString("if ")
-    out += visit(n.condition) + " then\n" + visit(n.thn)
+    var out = "if " + visit(n.condition) + " then\n" + indentVisitList(n.thn)
     if (n.els != null)
-      out += "\n" + indentString("else ") + visit(n.els).trim() + "\n" + indentString("end")
-    out
+      out += "\n" + "else " + visit(n.els).trim()
+    out + "\n" + "end"
   }
 
-  override def visit(n : ReturnStatement) : String = {
-    val oldIndent = indent
-    indent = 0
-    val values = visitList(n.returnValues)
-    indent = oldIndent
+  override def visit(n : ReturnStatement) : String = "return " + commaSeparate(visitList(n.returnValues))
 
-    indentString("return " + commaSeparate(values))
-  }
+  override def visit(n : BreakStatement) : String = "break"
 
-  override def visit(n : BreakStatement) : String = indentString("break")
-
-  override def visit(n : ContinueStatement) : String = indentString("continue")
+  override def visit(n : ContinueStatement) : String = "continue"
 
   override def visit(n : ForNumericStatement) : String = {
-    val out = indentString("for ") + visit(n.index) + " <- Range(" + visit(n.start) + ", "
-    out + visit(n.end) + ", " + visit(n.inc) + ")\n" + visit(n.body)
+    val out = "for " + visit(n.index) + " <- Range(" + visit(n.start) + ", "
+    out + visit(n.end) + ", " + visit(n.inc) + ") do\n" + indentVisitList(n.body) + "\n" + "end"
   }
 
   override def visit(n : ForEachStatement) : String = {
-    var out = indentString("for ") + visit(n.i1)
+    var out = "for " + visit(n.i1)
     if (n.i2 != null)
       out += visit(n.i2)
-    out + " in " + visit(n.collection) + "\n" + visit(n.body)
+    out + " in " + visit(n.collection) + " do\n" + indentVisitList(n.body) + "\n" + "end"
   }
 
-  override def visit(n : LocalVariableDeclarationStatement) : String =
-    indentString("local ") + commaSeparate(n.names.map((e : IdentifierExpression) => visit(e)))
+  override def visit(n : LocalVariableDeclarationStatement) : String = {
+    var out = "local " + commaSeparate(n.names.map((e : IdentifierExpression) => visit(e)))
+    if (n.values != null)
+      out += " = " + commaSeparate(visitList(n.values))
+    out
+  }
 
   override def visit(n : LogicalBinopExpression) : String = visit(n.lhs) + " " + n.op + " " + visit(n.rhs)
   override def visit(n : BitwiseBinopExpression) : String = visit(n.lhs) + " " + n.op + " " + visit(n.rhs)
@@ -115,23 +110,24 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
 
   // TODO varargs
   override def visit(n : FunctionDeclarationExpression) : String =
-    "function(" + commaSeparate(n.params.map((e : IdentifierExpression) => visit(e))) + ")\n" + visit(n.body) + "\n" + indentString("end")
+    "function(" + commaSeparate(n.params.map((e : IdentifierExpression) => visit(e))) + ")\n" + indentVisitList(n.body) + "\n" + "end"
 
   override def visit(n : TableConstructorExpression) : String = {
+    if (n.keys.elements.isEmpty)
+      return "{}"
+
     val keys = visitList(n.keys)
     val values = visitList(n.values)
 
-    indent += 1
     var out = ""
     if (keys.nonEmpty) {
-      out += indentString(keys.head + " = " + values.head)
+      out += indentStrings(Seq(keys.head + " = " + values.head), 1)
       for (i <- Range(1, keys.size)) {
-        out += ",\n" + indentString(keys(i) + " = " + values(i))
+        out += ",\n" + indentStrings(Seq(keys(i) + " = " + values(i)), 1)
       }
     }
-    indent -= 1
 
-    "{\n" + out + "\n}"
+    "{\n" + out + "\n" + "}"
   }
 
   override def visit(n : UpValueExpression) : String = "upValue(" + visit(n.id) + ")"
