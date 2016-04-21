@@ -3,11 +3,10 @@ package scluacheck
 import java.io.{File, FileReader}
 
 import scala.collection.mutable.ArrayBuffer
-
 import org.antlr.v4.runtime._
-
 import scluacheck.ast.ASTPrettyPrintVisitor
 import scluacheck.parser._
+import scluacheck.visitors.VerifyFunctionIDsVisitor
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
@@ -24,7 +23,8 @@ object SCLuaCheck extends App {
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\system\\MultiEvent.lua", // expression '&1&1 n' at line 9.
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\tests\\DumpQAVChecklist.lua" // Invalid backslash in string on line 112.
   )
-  val failedFiles = new ArrayBuffer[String]
+  val failedParsing = new ArrayBuffer[String]
+  val failedVerification = new ArrayBuffer[String]
 
   def test(f : File) : Boolean = {
     if (f.isDirectory) {
@@ -45,23 +45,27 @@ object SCLuaCheck extends App {
       val tokens = new CommonTokenStream(lexer)
       val parser = new SCLuaParser(tokens)
       val parseTree = parser.start()
-      val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
 
       if (parser.getNumberOfSyntaxErrors > 0) {
-        //println(f.getAbsolutePath)
-        failedFiles += f.getAbsolutePath
-        return true
+        failedParsing += f.getAbsolutePath
+      } else {
+        val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
+        if (VerifyFunctionIDsVisitor.visit(abstractSyntaxTree).nonEmpty) {
+          failedVerification +=  f.getAbsolutePath
+        }
       }
 
-      //println(tree.toStringTree(parser))
       return true
     }
-    return true
+    true
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
+  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua")//\\mohodata-lua\\sim\\Entity.lua")
   test(testDir)
-  println(failedFiles)
+  if (failedParsing.nonEmpty)
+    println("Failed to parse:\n  " + failedParsing.mkString("\n  "))
+  if (failedVerification.nonEmpty)
+    println("Failed to verify:\n  " + failedVerification.mkString("\n  "))
 
   /*val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
   val input = new ANTLRInputStream(new FileReader(testFile))
@@ -70,7 +74,8 @@ object SCLuaCheck extends App {
   val parser = new SCLuaParser(tokens)
   val parseTree = parser.start()
   val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
-  println(ASTPrettyPrintVisitor.visit(abstractSyntaxTree))*/
+  //println(ASTPrettyPrintVisitor.visit(abstractSyntaxTree))
+  println(VerifyFunctionIDsVisitor.visit(abstractSyntaxTree))*/
 
   // mohodata-lua/system contains a lot of the backend magic of Supreme Commander:
   // - Blueprints.lua makes blueprint magic happen and contains information on how mods work
