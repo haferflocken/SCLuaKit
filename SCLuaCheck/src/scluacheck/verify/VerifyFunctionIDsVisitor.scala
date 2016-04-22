@@ -1,4 +1,4 @@
-package scluacheck.visitors
+package scluacheck.verify
 
 import scluacheck.ast.{VarArgsExpression, _}
 

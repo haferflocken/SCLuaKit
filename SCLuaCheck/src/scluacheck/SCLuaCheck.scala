@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
-import scluacheck.visitors.VerifyFunctionIDsVisitor
+import scluacheck.verify.VerifyFunctionIDsVisitor
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
