@@ -4,7 +4,7 @@ import java.io.{File, FileReader}
 
 import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
-import scluacheck.ast.ASTPrettyPrintVisitor
+import scluacheck.ast._
 import scluacheck.parser._
 import scluacheck.visitors.VerifyFunctionIDsVisitor
 
@@ -32,10 +32,8 @@ object SCLuaCheck extends App {
         if (!test(e))
           return false
       }
-      return true
-    } else if (ignoreFiles.contains(f.getAbsolutePath)) {
-      return true // Skip files which are known to be bad.
-    } else if (f.getName.endsWith(".lua") || f.getName.endsWith(".bp")) {
+    } else if (!ignoreFiles.contains(f.getAbsolutePath) && (f.getName.endsWith(".lua") || f.getName.endsWith(".bp"))) {
+      // Parse the file.
       val input = new ANTLRInputStream(new FileReader(f))
       val lexer = new SCLuaLexer(input)
       lexer.removeErrorListeners()
@@ -46,16 +44,18 @@ object SCLuaCheck extends App {
       val parser = new SCLuaParser(tokens)
       val parseTree = parser.start()
 
+      // Verify the file parsed successfully.
       if (parser.getNumberOfSyntaxErrors > 0) {
         failedParsing += f.getAbsolutePath
       } else {
+        // Run additional verifications.
         val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
-        if (VerifyFunctionIDsVisitor.visit(abstractSyntaxTree).nonEmpty) {
-          failedVerification +=  f.getAbsolutePath
+        val badFnIDs = VerifyFunctionIDsVisitor.visit(abstractSyntaxTree)
+        if (badFnIDs.nonEmpty) {
+          val badFnPositions = badFnIDs.map((f : ASTNode) => f.line + ":" + f.column)
+          failedVerification +=  f.getAbsolutePath + " failed at " + badFnPositions.mkString(", ")
         }
       }
-
-      return true
     }
     true
   }
@@ -98,7 +98,7 @@ object SCLuaCheck extends App {
   // So now the Lua can be (mostly) lexed and parsed. Things to do with this:
   // - Identify C functions which the Lua is using (any function not defined by the Lua)
   // - Identify Lua functions which the C might be using (any function which is not called in the Lua)
-  // - Make assumption that new functions are not added to anything with names specified at runtime
+  // - (DONE) Verify that new functions are not added to anything with names specified at runtime
   //   - Use this to verify functions exist before they are called.
   //   - Derive interfaces from the way parameters are used in functions to say something about their type.
   //     - Use these interfaces to verify that function calls pass in compatible parameters.
