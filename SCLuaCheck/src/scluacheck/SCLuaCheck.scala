@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
-import scluacheck.verify.VerifyFunctionIDsVisitor
+import scluacheck.verify.{BuildSymbolTableVisitor, VerifyFunctionIDsVisitor}
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
@@ -26,12 +26,10 @@ object SCLuaCheck extends App {
   val failedParsing = new ArrayBuffer[String]
   val failedVerification = new ArrayBuffer[String]
 
-  def test(f : File) : Boolean = {
+  def test(f : File) : Unit = {
     if (f.isDirectory) {
-      for (e <- f.listFiles()) {
-        if (!test(e))
-          return false
-      }
+      for (e <- f.listFiles())
+        test(e)
     } else if (!ignoreFiles.contains(f.getAbsolutePath) && (f.getName.endsWith(".lua") || f.getName.endsWith(".bp"))) {
       // Parse the file.
       val input = new ANTLRInputStream(new FileReader(f))
@@ -48,19 +46,28 @@ object SCLuaCheck extends App {
       if (parser.getNumberOfSyntaxErrors > 0) {
         failedParsing += f.getAbsolutePath
       } else {
-        // Run additional verifications.
-        val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree)
+        // Make an abstract syntax tree to run verifications on.
+        val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree) match {
+          case n : FileNode => n
+          case _ =>
+            println("PARSE ERROR in " + f.getAbsolutePath + ": The parse tree was not parsed into a FileNode.")
+            return
+        }
+
+        // Run the function ID verification.
         val badFnIDs = VerifyFunctionIDsVisitor.visit(abstractSyntaxTree)
         if (badFnIDs.nonEmpty) {
           val badFnPositions = badFnIDs.map((f : ASTNode) => f.line + ":" + f.column)
-          failedVerification +=  f.getAbsolutePath + " failed at " + badFnPositions.mkString(", ")
+          failedVerification +=  "BAD FUNCTION ID in " + f.getAbsolutePath + " at " + badFnPositions.mkString(", ")
         }
+
+        // Run the type checker.
+        BuildSymbolTableVisitor.visit(abstractSyntaxTree)
       }
     }
-    true
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua")//\\mohodata-lua\\sim\\Entity.lua")
+  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
   test(testDir)
   if (failedParsing.nonEmpty)
     println("Failed to parse:\n  " + failedParsing.mkString("\n  "))

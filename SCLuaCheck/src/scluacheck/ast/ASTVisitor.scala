@@ -11,6 +11,7 @@ trait ASTVisitor[T] {
   def visitList(n : StatementList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
   def visitList(n : ExprList) : Seq[T] = if (n == null) Seq() else for (e <- n.elements) yield e.accept(this)
 
+  // Visiting a file node is the typical entry point for a visitor.
   def visit(n : FileNode) : T
 
   // Visit statements.

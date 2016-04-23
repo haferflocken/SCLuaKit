@@ -121,7 +121,7 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
     if (keys.nonEmpty) {
       out += indentStrings(Seq(keys.head + " = " + values.head))
       for (i <- Range(1, keys.size)) {
-        out += ",\n" + indentStrings(Seq(keys(i) + " = " + values(i)))
+        out += ",\n" + indentStrings(Seq("[" + keys(i) + "] = " + values(i)))
       }
     }
 

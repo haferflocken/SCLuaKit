@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c00357f7-8908-4d0e-888b-115f28acbfe5" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/scluacheck/visitors/VerifyFunctionIDsVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/verify/VerifyFunctionIDsVisitor.scala" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/scluacheck/verify/BuildSymbolTableVisitor.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" afterPath="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" afterPath="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
     </list>
     <ignored path="SCLuaCheck.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,17 +28,15 @@
     <favorites_list name="SCLuaCheck" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.48187634">
+    <splitter split-orientation="horizontal" split-proportion="0.48347548">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="SCLuaCheck.scala" pinned="false" current-in-tab="true">
+          <file leaf-file-name="SCLuaCheck.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1156">
-                  <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#20#53#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="733">
+                  <caret line="64" column="57" selection-start-line="64" selection-start-column="57" selection-end-line="64" selection-end-column="57" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -43,8 +44,18 @@
           <file leaf-file-name="ASTVisitor.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="0">
-                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+                <state relative-caret-position="340">
+                  <caret line="20" column="35" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="35" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ASTNode.scala" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="664">
+                  <caret line="168" column="67" selection-start-line="168" selection-start-column="67" selection-end-line="168" selection-end-column="67" />
                   <folding />
                 </state>
               </provider>
@@ -53,8 +64,8 @@
           <file leaf-file-name="ASTFromPTVisitor.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9758">
-                  <caret line="578" column="86" selection-start-line="578" selection-start-column="81" selection-end-line="578" selection-end-column="86" />
+                <state relative-caret-position="6120">
+                  <caret line="364" column="31" selection-start-line="364" selection-start-column="31" selection-end-line="364" selection-end-column="31" />
                   <folding>
                     <element signature="e#27#60#0" expanded="false" />
                   </folding>
@@ -62,11 +73,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ASTPrettyPrintVisitor.scala" pinned="false" current-in-tab="false">
+          <file leaf-file-name="ASTPrettyPrintVisitor.scala" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1904">
-                  <caret line="112" column="40" selection-start-line="112" selection-start-column="38" selection-end-line="112" selection-end-column="40" />
+                <state relative-caret-position="606">
+                  <caret line="122" column="38" selection-start-line="122" selection-start-column="38" selection-end-line="122" selection-end-column="38" />
                   <folding />
                 </state>
               </provider>
@@ -79,28 +90,28 @@
           <file leaf-file-name="SCLua.g4" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="0">
-                  <caret line="107" column="41" selection-start-line="107" selection-start-column="41" selection-end-line="107" selection-end-column="41" />
+                <state relative-caret-position="114">
+                  <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="ASTNode.scala" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="233">
-                  <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="VerifyFunctionIDsVisitor.scala" pinned="false" current-in-tab="true">
+          <file leaf-file-name="VerifyFunctionIDsVisitor.scala" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/scluacheck/verify/VerifyFunctionIDsVisitor.scala">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1264">
-                  <caret line="7" column="3" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
+                <state relative-caret-position="1938">
+                  <caret line="114" column="0" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="BuildSymbolTableVisitor.scala" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/scluacheck/verify/BuildSymbolTableVisitor.scala">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="534">
+                  <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -131,13 +142,15 @@
         <option value="$PROJECT_DIR$/gen/scluacheck/parser/SCLuaVisitor.java" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTStructurePrintVisitor.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/ast/VerifyFunctionIDsVisitor.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/visitors/VerifyFunctionIDsVisitor.scala" />
-        <option value="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
         <option value="$PROJECT_DIR$/src/scluacheck/verify/VerifyFunctionIDsVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/verify/VerifyIDsVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/verify/BuildSymbolTableVisitor.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala" />
+        <option value="$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala" />
       </list>
     </option>
   </component>
@@ -179,9 +192,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -236,50 +249,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="verify" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SCLuaCheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SCLuaCheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scluacheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="parser" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SCLuaCheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="SCLuaCheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scluacheck" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="ast" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -296,6 +265,11 @@
     <property name="settings.editor.selected.configurable" value="vcs.Git" />
     <property name="settings.editor.splitter.proportion" value="0.25440314" />
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/Users/John/Documents/GitHub/SCLuaKit/SCLuaCheck/src/scluacheck/ast/ASTNode.scala" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="scluacheck.verify" />
+    </key>
   </component>
   <component name="RunManager" selected="Application.SCLuaCheck">
     <configuration default="false" name="SCLuaCheck" type="Application" factoryName="Application" temporary="true">
@@ -611,10 +585,10 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.68255687" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6890574" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32932165" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1945629" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1945629" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -654,20 +628,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/Desktop/scfa-lua/lua-lua/formations.lua">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="777" column="0" selection-start-line="777" selection-start-column="0" selection-end-line="777" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/scfa-lua/lua-lua/AI/AIBehaviors.lua">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="95" selection-start-line="16" selection-start-column="95" selection-end-line="16" selection-end-column="95" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Desktop/scfa-lua/lua-lua/ui/game/multihead.lua">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -956,63 +916,70 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="107" column="41" selection-start-line="107" selection-start-column="41" selection-end-line="107" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1904">
-          <caret line="112" column="40" selection-start-line="112" selection-start-column="38" selection-end-line="112" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/ASTFromPTVisitor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9758">
-          <caret line="578" column="86" selection-start-line="578" selection-start-column="81" selection-end-line="578" selection-end-column="86" />
+        <state relative-caret-position="6120">
+          <caret line="364" column="31" selection-start-line="364" selection-start-column="31" selection-end-line="364" selection-end-column="31" />
           <folding>
             <element signature="e#27#60#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scluacheck/verify/VerifyFunctionIDsVisitor.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1264">
-          <caret line="7" column="3" selection-start-line="7" selection-start-column="3" selection-end-line="7" selection-end-column="3" />
+        <state relative-caret-position="1938">
+          <caret line="114" column="0" selection-start-line="114" selection-start-column="0" selection-end-line="114" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/verify/VerifyIDsVisitor.scala" />
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/parser/SCLua.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/scluacheck/SCLuaCheck.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1156">
-          <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
-          <folding>
-            <element signature="e#20#53#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="733">
+          <caret line="64" column="57" selection-start-line="64" selection-start-column="57" selection-end-line="64" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/verify/BuildSymbolTableVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTNode.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="664">
+          <caret line="168" column="67" selection-start-line="168" selection-start-column="67" selection-end-line="168" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="35" selection-start-line="20" selection-start-column="35" selection-end-line="20" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scluacheck/ast/ASTPrettyPrintVisitor.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="606">
+          <caret line="122" column="38" selection-start-line="122" selection-start-column="38" selection-end-line="122" selection-end-column="38" />
+          <folding />
         </state>
       </provider>
     </entry>

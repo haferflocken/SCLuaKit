@@ -362,7 +362,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
         key = visitExpression(e.expression(0)).asInstanceOf[Expression]
         value = visitExpression(e.expression(1)).asInstanceOf[Expression]
       } else if (e.ID != null) {
-        key = new IdentifierExpression(e.ID.getSymbol.getLine, e.ID.getSymbol.getCharPositionInLine, e.ID.getText)
+        key = new StringLiteral(e.ID.getSymbol.getLine, e.ID.getSymbol.getCharPositionInLine, e.ID.getText)
         value = visitExpression(e.expression(0)).asInstanceOf[Expression]
       } else {
         key = new NumericLiteral(e.getStart.getLine, e.getStart.getCharPositionInLine, i)
