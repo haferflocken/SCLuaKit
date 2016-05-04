@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
-import scluacheck.verify.{BuildSymbolTableVisitor, VerifyFunctionIDsVisitor}
+import scluacheck.verify.{BuildSymbolTableVisitor, InferBasicFunctionTypesVisitor, VerifyFunctionIDsVisitor}
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
@@ -25,6 +25,7 @@ object SCLuaCheck extends App {
   )
   val failedParsing = new ArrayBuffer[String]
   val failedVerification = new ArrayBuffer[String]
+  val failedTypeChecking = new ArrayBuffer[String]
 
   def test(f : File) : Unit = {
     if (f.isDirectory) {
@@ -63,11 +64,21 @@ object SCLuaCheck extends App {
 
         // Run the type checker.
         BuildSymbolTableVisitor.visit(abstractSyntaxTree)
+
+        InferBasicFunctionTypesVisitor.globalTable = BuildSymbolTableVisitor.globalTable
+        InferBasicFunctionTypesVisitor.localTable = BuildSymbolTableVisitor.localTable
+        try {
+          InferBasicFunctionTypesVisitor.visit(abstractSyntaxTree)
+          if (InferBasicFunctionTypesVisitor.errors.nonEmpty || InferBasicFunctionTypesVisitor.warnings.nonEmpty)
+            failedTypeChecking += "TYPE CHECKING ERROR in " + f.getAbsolutePath
+        } catch {
+          case e : Error => println("TYPE CHECKING FATAL ERROR in " + f.getAbsolutePath)
+        }
       }
     }
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")//\\mohodata-lua\\sim\\Entity.lua")
+  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")
   test(testDir)
   if (failedParsing.nonEmpty)
     println("Failed to parse:\n  " + failedParsing.mkString("\n  "))
@@ -93,6 +104,16 @@ object SCLuaCheck extends App {
   // - utils.lua defines a lot of very useful functions.
 
   // mohodata-lua/globalInit.lua reveals that moho is a table of classes exported from C.
+
+  // TODO The type checking/inference system:
+  // - Run verifications which allow for a simpler process:
+  //   - All function names are known statically (closures allowed)
+  //   - TODO anything else?
+  // - Build symbol tables for every file.
+  // - Infer the types of C functions and report any which could not be easily inferred, so that they can have their return and argument types specified manually.
+  // - Infer the return and argument types of any basic function (that is, any function which does not call functions defined outside of its file)
+  //   - TODO is mutual recursion OK?
+
 
   // TODO Make a pretty print visitor for the AST and verify it produces valid Lua.
   // TODO Determine what assumptions can be made safely in the existing codebase.

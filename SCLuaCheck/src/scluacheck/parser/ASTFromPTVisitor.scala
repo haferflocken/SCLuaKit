@@ -365,7 +365,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
         key = new StringLiteral(e.ID.getSymbol.getLine, e.ID.getSymbol.getCharPositionInLine, e.ID.getText)
         value = visitExpression(e.expression(0)).asInstanceOf[Expression]
       } else {
-        key = new NumericLiteral(e.getStart.getLine, e.getStart.getCharPositionInLine, i)
+        key = new NumericLiteral(e.getStart.getLine, e.getStart.getCharPositionInLine, i + 1) // Arrays are 1-based in Lua.
         value = visitExpression(e.expression(0)).asInstanceOf[Expression]
       }
       keyExprs = keyExprs :+ key

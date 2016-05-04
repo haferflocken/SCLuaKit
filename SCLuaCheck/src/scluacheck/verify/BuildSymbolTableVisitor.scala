@@ -2,8 +2,10 @@ package scluacheck.verify
 
 import scluacheck.ast._
 
+import scala.collection.mutable
+
 /**
-  * Build a symbol table for the Lua AST. This is the first pass of type checking.
+  * Builds symbol tables for the Lua AST. This is the first pass of type checking.
   *
   * The methods globalTable and localTable return the most recent result of running this visitor on a FileNode.
   */
@@ -19,8 +21,8 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
 
   // Visiting a file node resets things before visiting.
   override def visit(n : FileNode) : Unit = {
-    _globalTable = new SymbolTable(null, Seq(), Map())
-    _localTable = new SymbolTable(null, Seq(), Map())
+    _globalTable = new SymbolTable(null, Seq(), mutable.Map())
+    _localTable = new SymbolTable(null, Seq(), mutable.Map())
     visit(n.statements)
   }
 
@@ -34,7 +36,7 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : WhileStatement) : Unit = { visit(n.condition); visitNewScope(n, n.body) }
 
   override def visit(n : RepeatUntilStatement) : Unit = {
-    var newLocalTable = new SymbolTable(_localTable, Seq(), Map())
+    var newLocalTable = new SymbolTable(_localTable, Seq(), mutable.Map())
     _localTable = newLocalTable
     visit(n.body)
     visit(n.condition)
@@ -57,9 +59,9 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : ContinueStatement) : Unit = {}
 
   override def visit(n : ForNumericStatement) : Unit = {
-    var newLocalTable = new SymbolTable(_localTable, Seq(), Map())
+    var newLocalTable = new SymbolTable(_localTable, Seq(), mutable.Map())
     _localTable = newLocalTable
-    _localTable = _localTable.addSymbol(n.index.id)
+    _localTable = _localTable.addSymbol(new TypedSymbol(n.index.id, NumberType))
     visit(n.start)
     visit(n.end)
     visit(n.inc)
@@ -71,11 +73,11 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   }
 
   override def visit(n : ForEachStatement) : Unit = {
-    var newLocalTable = new SymbolTable(_localTable, Seq(), Map())
+    var newLocalTable = new SymbolTable(_localTable, Seq(), mutable.Map())
     _localTable = newLocalTable
-    _localTable = _localTable.addSymbol(n.i1.id)
+    _localTable = _localTable.addSymbol(new TypedSymbol(n.i1.id, null))
     if (n.i2 != null)
-      _localTable = _localTable.addSymbol(n.i2.id)
+      _localTable = _localTable.addSymbol(new TypedSymbol(n.i2.id, null))
     visit(n.collection)
     visit(n.body)
 
@@ -87,7 +89,7 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : LocalVariableDeclarationStatement) : Unit = {
     visitList(n.values) // This is visited before the identifiers because the identifiers are not in scope yet.
     for (i <- n.names)
-      _localTable = _localTable.addSymbol(i.id)
+      _localTable = _localTable.addSymbol(new TypedSymbol(i.id, null))
   }
   
   override def visit(n : LogicalBinopExpression) : Unit = { visit(n.lhs); visit(n.rhs) }
@@ -102,8 +104,8 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : ParentheticalExpression) : Unit = visit(n.e)
 
   override def visit(n : IdentifierExpression) : Unit = {
-    if (!_localTable.lookup(n.id) && !_globalTable.lookup(n.id)) {
-      _globalTable = _globalTable.addSymbol(n.id)
+    if (_localTable.lookup(n.id) == null && _globalTable.lookup(n.id) == null) {
+      _globalTable = _globalTable.addSymbol(new TypedSymbol(n.id, OmniType))
     }
   }
 
@@ -113,14 +115,16 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : NilLiteral) : Unit = {}
 
   override def visit(n : FunctionDeclarationExpression) : Unit = {
-    var newLocalTable = new SymbolTable(_localTable, Seq(), Map())
+    var newLocalTable = new SymbolTable(_localTable, Seq(), mutable.Map())
     _localTable = newLocalTable
     if (n.params != null) {
       for (p <- n.params)
-        _localTable = _localTable.addSymbol(p.id)
+        _localTable = _localTable.addSymbol(new TypedSymbol(p.id, null))
     }
     if (n.hasVarArgs)
-      _localTable = _localTable.addSymbol("...")
+      _localTable = _localTable.addSymbol(new TypedSymbol("...", TableType))
+
+    visitList(n.body)
 
     newLocalTable = _localTable
     _localTable = _localTable.parentTable
@@ -136,29 +140,11 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   override def visit(n : VarArgsExpression) : Unit = _localTable.lookup("...")
 
   private def visitNewScope(scopeName : ASTNode, chunk : StatementList) : Unit = {
-    var newLocalTable = new SymbolTable(_localTable, Seq(), Map())
-    _localTable = newLocalTable
+    _localTable = new SymbolTable(_localTable, Seq(), mutable.Map())
     visit(chunk)
 
-    newLocalTable = _localTable
-    _localTable = _localTable.parentTable
+    val newLocalTable = _localTable
+    _localTable = newLocalTable.parentTable
     _localTable.addSubTable(scopeName, newLocalTable)
-  }
-}
-
-class SymbolTable(val parentTable : SymbolTable, val symbols : Seq[String], var subTables : Map[ASTNode, SymbolTable]) {
-  def lookup(s : String) : Boolean = symbols.contains(s) || (parentTable != null && parentTable.lookup(s))
-
-  def addSymbol(s : String) = new SymbolTable(parentTable, symbols :+ s, subTables)
-  def addSubTable(k : ASTNode, v : SymbolTable) : Unit = { subTables = subTables + (k -> v) }
-
-  override def toString : String = toIndentedString("")
-
-  private def toIndentedString(prefix : String) : String = {
-    var out = prefix + symbols.mkString("{", ", ", "}")
-    for ((_, s) <- subTables) {
-      out += "\n" + s.toIndentedString(prefix + "  ")
-    }
-    out
   }
 }
