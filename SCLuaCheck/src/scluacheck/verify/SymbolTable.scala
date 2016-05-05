@@ -3,45 +3,40 @@ package scluacheck.verify
 import scluacheck.ast.ASTNode
 
 import scala.collection.mutable
+import mutable.ArrayBuffer
 
 /**
-  * The symbol table with types.
+  * The symbol table with types. Is automatically initialized with its parent's symbols
+  * when using the single argument constructor.
   */
-class SymbolTable(val parentTable : SymbolTable, val symbols : Seq[TypedSymbol], var subTables : mutable.Map[ASTNode, SymbolTable]) {
+class SymbolTable(val parentTable : SymbolTable,
+                  private val _symbols : ArrayBuffer[TypedSymbol],
+                  val subTables : mutable.Map[ASTNode, SymbolTable]) {
+
+  def this(parentTable : SymbolTable) {
+    this(parentTable,
+      new ArrayBuffer[TypedSymbol]() ++= (if (parentTable != null) parentTable.symbols else Seq()),
+      mutable.Map())
+  }
+
+  // The symbols are mutable internally, but immutable externally.
+  def symbols : Seq[TypedSymbol] = _symbols
+
   def lookup(s : String) : TypedSymbol = {
     val findFn = (e : TypedSymbol) => e.symbol.equals(s)
-    val mine = symbols.find(findFn)
+    val mine = _symbols.find(findFn)
     if (mine.isDefined)
       return mine.get
-    if (parentTable != null)
-      return parentTable.lookup(s)
     null
   }
 
-  def addSymbol(s : TypedSymbol) = new SymbolTable(parentTable, symbols :+ s, subTables)
+  def addSymbol(s : TypedSymbol) : Unit = { _symbols += s }
   def addSubTable(k : ASTNode, v : SymbolTable) : Unit = { subTables.update(k, v) }
-
-  def isAnywhere(n : ASTNode) : Boolean = {
-    var top = this
-    while (top.parentTable != null)
-      top = top.parentTable
-    top.isInSubs(n)
-  }
-
-  def isInSubs(n : ASTNode) : Boolean = {
-    if (subTables.get(n).nonEmpty)
-      return true
-    for ((_, t) <- subTables) {
-      if (t.isInSubs(n))
-        return true
-    }
-    false
-  }
 
   override def toString : String = toIndentedString("")
 
   private def toIndentedString(prefix : String) : String = {
-    var out = prefix + symbols.mkString("{", ", ", "}")
+    var out = prefix + _symbols.mkString("{", ", ", "}")
     for ((_, s) <- subTables) {
       out += "\n" + s.toIndentedString(prefix + "  ")
     }

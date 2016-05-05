@@ -1,13 +1,20 @@
 package scluacheck.ast
 
 /**
+  * Prints the AST as pseudo-Lua. Singleton version of the base pretty printer.
+  */
+object ASTPrettyPrintVisitor extends BasePrettyPrintVisitor
+
+/**
   * Prints the AST as pseudo-Lua. Methods should not have dangling newlines.
   * The convention is that visiting an expression will not return a string with indentation on the first line,
   * but visiting a statement will.
+  *
+  * Designed as a base class for pretty print visitors with Lua-like output.
   */
-object ASTPrettyPrintVisitor extends ASTVisitor[String] {
+abstract class BasePrettyPrintVisitor extends ASTVisitor[String] {
 
-  private def join(strs : Seq[String], separator : String) : String = {
+  protected def join(strs : Seq[String], separator : String) : String = {
     var out = ""
     if (strs.nonEmpty) {
       out += strs.head
@@ -17,14 +24,14 @@ object ASTPrettyPrintVisitor extends ASTVisitor[String] {
     out
   }
 
-  private def indentStrings(inStrs : Seq[String]) : String = {
+  protected def indentStrings(inStrs : Seq[String]) : String = {
     val s = (for (i <- inStrs) yield i.split("\n")).flatten
     "  " + join(s, "\n  ")
   }
 
-  private def indentVisitList(l : StatementList) : String = indentStrings(visitList(l))
+  protected def indentVisitList(l : StatementList) : String = indentStrings(visitList(l))
 
-  private def commaSeparate(s : Seq[String]) : String = join(s, ", ")
+  protected def commaSeparate(s : Seq[String]) : String = join(s, ", ")
 
   override def visit(n : StatementList) : String = throw new java.lang.Error("Not implemented")
   override def visit(n : ExprList) : String = throw new java.lang.Error("Not implemented")

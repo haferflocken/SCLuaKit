@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
-import scluacheck.verify.{BuildSymbolTableVisitor, InferBasicFunctionTypesVisitor, VerifyFunctionIDsVisitor}
+import scluacheck.verify.{BuildSymbolTableVisitor, InferBasicFunctionTypesVisitor, TypedPrettyPrintVisitor, VerifyFunctionIDsVisitor}
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
@@ -69,8 +69,15 @@ object SCLuaCheck extends App {
         InferBasicFunctionTypesVisitor.localTable = BuildSymbolTableVisitor.localTable
         try {
           InferBasicFunctionTypesVisitor.visit(abstractSyntaxTree)
-          if (InferBasicFunctionTypesVisitor.errors.nonEmpty || InferBasicFunctionTypesVisitor.warnings.nonEmpty)
-            failedTypeChecking += "TYPE CHECKING ERROR in " + f.getAbsolutePath
+          if (InferBasicFunctionTypesVisitor.errors.nonEmpty || InferBasicFunctionTypesVisitor.warnings.nonEmpty) {
+            failedTypeChecking ++= InferBasicFunctionTypesVisitor.warnings
+            failedTypeChecking ++= InferBasicFunctionTypesVisitor.errors
+          }
+          if (InferBasicFunctionTypesVisitor.errors.isEmpty) {
+            TypedPrettyPrintVisitor.globalTable = InferBasicFunctionTypesVisitor.globalTable
+            TypedPrettyPrintVisitor.localTable = InferBasicFunctionTypesVisitor.localTable
+            println(TypedPrettyPrintVisitor.visit(abstractSyntaxTree))
+          }
         } catch {
           case e : Error => println("TYPE CHECKING FATAL ERROR in " + f.getAbsolutePath)
         }
@@ -78,12 +85,14 @@ object SCLuaCheck extends App {
     }
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua")
+  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\aeonprojectiles.lua")
   test(testDir)
   if (failedParsing.nonEmpty)
-    println("Failed to parse:\n  " + failedParsing.mkString("\n  "))
+    println("Parsing failures:\n  " + failedParsing.mkString("\n  "))
   if (failedVerification.nonEmpty)
-    println("Failed to verify:\n  " + failedVerification.mkString("\n  "))
+    println("Verification failures:\n  " + failedVerification.mkString("\n  "))
+  if (failedTypeChecking.nonEmpty)
+    println("Type checking failures:\n  " + failedTypeChecking.mkString("\n  "))
 
   /*val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
   val input = new ANTLRInputStream(new FileReader(testFile))

@@ -72,9 +72,6 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
 
   override def visit(n : IfStatement) : TypedNode = {
     visit(n.condition)
-    if (localTable.subTables.get(n).isEmpty) {
-      println(n.line + ":" + n.column + (if (localTable.isAnywhere(n)) " is somewhere." else " isn't anywhere."))
-    }
     localTable = localTable.subTables(n)
     visitList(n.thn)
     localTable = localTable.parentTable
@@ -220,6 +217,7 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
 
     val fnType = new TypedNode(n, FunctionType(returnTypes, argTypes))
     // TODO detect bad function types?
+    // TODO keep function type around?
 
     returnTypes = prevReturnTypes
     fnType

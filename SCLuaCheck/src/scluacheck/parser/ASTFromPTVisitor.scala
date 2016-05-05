@@ -606,12 +606,11 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val methodID = new StringLiteral(methodSymbol.getLine, methodSymbol.getCharPositionInLine, methodSymbol.getText)
     val func = new TableAccessExpression(line, column, calleeExpr, methodID)
 
-    val implicitArg = new IdentifierExpression(line, column, "self")
     val rawArgs = visitArgs(argsCtx)
     val args = rawArgs match {
-      case a : Expression => new ExprList(a.line, a.column, Seq(implicitArg, a))
-      case l : ExprList => new ExprList(l.line, l.column, implicitArg +: l.elements)
-      case DefRes => null
+      case a : Expression => new ExprList(a.line, a.column, Seq(calleeExpr, a))
+      case l : ExprList => new ExprList(l.line, l.column, calleeExpr +: l.elements)
+      case DefRes => new ExprList(argsCtx.getStart.getLine, argsCtx.getStart.getCharPositionInLine, Seq(calleeExpr))
     }
     new FunctionCallExpression(line, column, func, args)
   }
