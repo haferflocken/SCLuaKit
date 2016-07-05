@@ -55,16 +55,37 @@ class TypedSymbol(val symbol : String, var t : Type) {
   * The type of a symbol in the symbol table or a node in the AST.
   */
 abstract class Type
-object NilType extends Type
-object BooleanType extends Type
-object NumberType extends Type
-object StringType extends Type
-case class FunctionType(returnTypes : Seq[Type], argTypes : Seq[Type]) extends Type
-object UserdataType extends Type
-object ThreadType extends Type
-object TableType extends Type
-object OmniType extends Type // Globals are initially assumed to be potentially any type.
-case class OrType(possibleTypes : Set[Type]) extends Type
+object NilType extends Type {
+  override def toString : String = "Nil"
+}
+object BooleanType extends Type {
+  override def toString : String = "Boolean"
+}
+object NumberType extends Type {
+  override def toString : String = "Number"
+}
+object StringType extends Type {
+  override def toString : String = "String"
+}
+case class FunctionType(returnTypes : Seq[Type], argTypes : Seq[Type]) extends Type {
+  override def toString : String = argTypes.mkString("Func(", ", ", ") => ") + returnTypes.mkString("(", ", ", ")")
+}
+object UserdataType extends Type {
+  override def toString : String = "Userdata"
+}
+object ThreadType extends Type {
+  override def toString : String = "Thread"
+}
+object TableType extends Type {
+  override def toString : String = "Table"
+}
+// Globals are initially assumed to be potentially any type.
+object OmniType extends Type {
+  override def toString : String = "Omni"
+}
+case class OrType(possibleTypes : Set[Type]) extends Type {
+  override def toString : String = possibleTypes.mkString("Or(", ", ", ")")
+}
 
 object Type {
   def or(l : Type, r : Type) : Type = {

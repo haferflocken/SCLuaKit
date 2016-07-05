@@ -47,10 +47,14 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   }
 
   override def visit(n : IfStatement) : Unit = {
-    visit(n.condition)
-    visitNewScope(n, n.thn)
-    if (n.els != null)
-      visit(n.els)
+    for (i <- n.conditions.indices) {
+      visit(n.conditions(i))
+      visitNewScope(n.bodies(i), n.bodies(i))
+    }
+
+    if (n.conditions.size < n.bodies.size) {
+      visitNewScope(n.bodies.last, n.bodies.last)
+    }
   }
 
   override def visit(n : ReturnStatement) : Unit = visitList(n.returnValues)
@@ -114,10 +118,8 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
 
   override def visit(n : FunctionDeclarationExpression) : Unit = {
     _localTable = new SymbolTable(_localTable)
-    if (n.params != null) {
-      for (p <- n.params)
-        _localTable.addSymbol(new TypedSymbol(p.id, null))
-    }
+    for (p <- n.params)
+       _localTable.addSymbol(new TypedSymbol(p.id, null))
     if (n.hasVarArgs)
       _localTable.addSymbol(new TypedSymbol("...", TableType))
 

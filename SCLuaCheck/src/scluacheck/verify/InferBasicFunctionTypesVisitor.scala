@@ -22,7 +22,6 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
   var globalTable : SymbolTable = null
   var localTable : SymbolTable = null
 
-  // TODO uncomment when this class is complete:
   def warnings = _warnings
   def errors = _errors
 
@@ -71,12 +70,19 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
   }
 
   override def visit(n : IfStatement) : TypedNode = {
-    visit(n.condition)
-    localTable = localTable.subTables(n)
-    visitList(n.thn)
-    localTable = localTable.parentTable
-    if (n.els != null)
-      visit(n.els)
+    for (i <- n.conditions.indices) {
+      visit(n.conditions(i))
+      localTable = localTable.subTables(n.bodies(i))
+      visitList(n.bodies(i))
+      localTable = localTable.parentTable
+    }
+
+    if (n.conditions.size < n.bodies.size) {
+      localTable = localTable.subTables(n.bodies.last)
+      visitList(n.bodies.last)
+      localTable = localTable.parentTable
+    }
+
     new TypedNode(n, NilType)
   }
 
@@ -139,11 +145,11 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
     val rhs = visit(n.rhs)
     if (n.op == RelationalBinop.EQ || n.op == RelationalBinop.NE) {
       if (lhs.t != null && rhs.t != null && !Type.intersects(lhs.t, rhs.t))
-        reportWarning(n, "Equality expression is constant because the operands have different types.")
+        reportWarning(n, "Equality expression is constant because the operands have different types " + lhs.t + " and " + rhs.t + ".")
     } else {
       val expectedType = Type.or(NumberType, StringType)
-      checkAndInfer(n, lhs, expectedType, "Relational expression contains operands which may not support the operator.")
-      checkAndInfer(n, rhs, expectedType, "Relational expression contains operands which may not support the operator.")
+      checkAndInfer(n, lhs, expectedType, "Relational expression contains operands of type " + lhs.t + " which may not support the operator.")
+      checkAndInfer(n, rhs, expectedType, "Relational expression contains operands of type " + rhs.t + " which may not support the operator.")
     }
     new TypedNode(n, BooleanType) // Relational operators must always return a boolean.
   }
@@ -208,10 +214,8 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
     visitList(n.body)
 
     val argTypes = new ArrayBuffer[Type]
-    if (n.params != null) {
-      for (p <- n.params) {
-        argTypes += localTable.lookup(p.id).t
-      }
+    for (p <- n.params) {
+      argTypes += localTable.lookup(p.id).t
     }
     localTable = localTable.parentTable
 

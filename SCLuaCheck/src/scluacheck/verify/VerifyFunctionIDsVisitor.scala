@@ -2,6 +2,8 @@ package scluacheck.verify
 
 import scluacheck.ast.{VarArgsExpression, _}
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Verify that functions are always given names which can be determined statically.
   * Returns any functions which have names which cannot be determined statically.
@@ -50,8 +52,11 @@ object VerifyFunctionIDsVisitor extends ASTVisitor[Seq[ASTNode]] {
   override def visit(n : WhileStatement) : Seq[ASTNode] = visit(n.body)
   override def visit(n : RepeatUntilStatement) : Seq[ASTNode] = visit(n.body)
   override def visit(n : IfStatement) : Seq[ASTNode] = {
-    val out = visit(n.thn)
-    if (n.els != null) out ++ visit(n.els) else out
+    val out = new ArrayBuffer[ASTNode]
+    for (b <- n.bodies) {
+      out ++= visit(b)
+    }
+    out
   }
   override def visit(n : ReturnStatement) : Seq[ASTNode] = Seq()
   override def visit(n : BreakStatement) : Seq[ASTNode] = Seq()

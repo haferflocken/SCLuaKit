@@ -32,14 +32,28 @@ object TypedPrettyPrintVisitor extends BasePrettyPrintVisitor {
   }
 
   override def visit(n : IfStatement) : String = {
-    var out = "if " + visit(n.condition) + " then\n"
+    var out = "if " + visit(n.conditions.head) + " then\n"
 
     localTable = localTable.subTables(n)
-    out += indentVisitList(n.thn)
+    out += indentVisitList(n.bodies.head).trim()
     localTable = localTable.parentTable
 
-    if (n.els != null)
-      out += "\n" + "else " + visit(n.els).trim()
+    for (i <- Range(1, n.conditions.size)) {
+      out += "\nelseif " + visit(n.conditions(i)) + " then\n"
+
+      localTable = localTable.subTables(n)
+      out += indentVisitList(n.bodies(i)).trim()
+      localTable = localTable.parentTable
+    }
+
+    if (n.conditions.size < n.bodies.size) {
+      out += "\nelse\n"
+
+      localTable = localTable.subTables(n)
+      out += indentVisitList(n.bodies.last).trim()
+      localTable = localTable.parentTable
+    }
+
     out + "\n" + "end"
   }
 
@@ -76,12 +90,12 @@ object TypedPrettyPrintVisitor extends BasePrettyPrintVisitor {
 
   override def visit(n : FunctionDeclarationExpression) : String = {
     var out = "function("
-    if (n.params != null) {
-      out += commaSeparate(n.params.map((e : IdentifierExpression) => visit(e)))
-      if (n.hasVarArgs)
+    out += commaSeparate(n.params.map((e : IdentifierExpression) => visit(e)))
+    if (n.hasVarArgs) {
+      if (n.params.nonEmpty)
         out += ", ..."
-    } else if (n.hasVarArgs) {
-      out += "..."
+      else
+        out += "..."
     }
 
     localTable = localTable.subTables(n)

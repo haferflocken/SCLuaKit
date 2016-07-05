@@ -6,6 +6,9 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor
 import scluacheck.ast._
 import scluacheck.parser.SCLuaParser._
 
+import scala.collection.mutable
+import mutable.ArrayBuffer
+
 /**
   * Visits a parse tree and spits out an abstract syntax tree.
   * This file is laid out to match SCLua.g4
@@ -50,7 +53,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val stats = visitChildren(ctx)
     stats match {
       case l : StatementList => l
-      case DefRes => null
+      case DefRes => new StatementList(line, column, Seq())
     }
   }
 
@@ -103,21 +106,24 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val first = visitIfPartIf(ctx.ifPartIf).asInstanceOf[IfStatement]
     val elseifs = for (i <- Range(0, ctx.ifPartElseif.size)) yield visitIfPartElseif(ctx.ifPartElseif(i)).asInstanceOf[IfStatement]
 
-    // Chain the parts of the if statement together.
-    var prev : Statement = null
-    var start = elseifs.size - 1
-    if (ctx.ifPartElse != null)
-      prev = visitIfPartElse(ctx.ifPartElse).asInstanceOf[Statement]
-    else if (elseifs.nonEmpty) {
-      prev = elseifs.last
-      start = elseifs.size - 2
+    // Deconstruct the partially constructed if statements which the sub-functions returned.
+    val conditions = new ArrayBuffer[Expression]
+    val bodies = new ArrayBuffer[StatementList]
+
+    conditions += first.conditions.head
+    bodies += first.bodies.head
+    for (eIf <- elseifs) {
+      conditions += eIf.conditions.head
+      bodies += eIf.bodies.head
     }
 
-    for (i <- Range(start, -1, -1)) {
-      val e = elseifs(i)
-      prev = new IfStatement(e.line, e.column, e.condition, e.thn, prev)
+    // Append the else part, if there is one.
+    if (ctx.ifPartElse != null) {
+      bodies += visitIfPartElse(ctx.ifPartElse).asInstanceOf[StatementList]
     }
-    new IfStatement(first.line, first.column, first.condition, first.thn, prev)
+
+    // Chain the parts of the if statement together.
+    new IfStatement(first.line, first.column, conditions, bodies)
   }
 
   override def visitReturnStatement(ctx : ReturnStatementContext) : ASTNode = {
@@ -176,12 +182,9 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val binding = visitFuncName(ctx.funcName).asInstanceOf[Expression]
 
     // Add the implicit parameter if this is a method call.
-    val params = if (ctx.funcName.methodName != null) {
-      if (rawParams != null)
+    val params = if (ctx.funcName.methodName != null)
         new IdentifierExpression(line, column, "self") +: rawParams
-      else
-        Seq(new IdentifierExpression(line, column, "self"))
-    } else
+    else
       rawParams
 
     val funcDeclExpr = new FunctionDeclarationExpression(line, column, params, hasVarArgs, body)
@@ -331,9 +334,12 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
   }
 
   override def visitParentheticalExpression(ctx : ParentheticalExpressionContext) : ASTNode = {
+    val line = ctx.getStart.getLine
+    val column = ctx.getStart.getCharPositionInLine
+
     val l = visitChildren(ctx).asInstanceOf[ExprList]
     assert(l.elements.size == 1)
-    l.elements.head
+    new ParentheticalExpression(line, column, l.elements.head)
   }
 
   override def visitFunctionDeclExpression(ctx : FunctionDeclExpressionContext) : ASTNode = {
@@ -397,7 +403,7 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val column = ctx.getStart.getCharPositionInLine
     val condition = visitExpression(ctx.expression).asInstanceOf[Expression]
     val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
-    new IfStatement(line, column, condition, body, null)
+    new IfStatement(line, column, Seq(condition), Seq(body))
   }
 
   // Returns a partially constructed if statement which is an elseif clause of an if statement.
@@ -406,15 +412,11 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     val column = ctx.getStart.getCharPositionInLine
     val condition = visitExpression(ctx.expression).asInstanceOf[Expression]
     val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
-    new IfStatement(line, column, condition, body, null)
+    new IfStatement(line, column, Seq(condition), Seq(body))
   }
 
   // Returns a chunk which represents the else clause of an if statement.
-  override def visitIfPartElse(ctx : IfPartElseContext) : ASTNode = {
-    val line = ctx.getStart.getLine
-    val column = ctx.getStart.getCharPositionInLine
-    new ExplicitBlockStatement(line, column, visitChunk(ctx.chunk).asInstanceOf[StatementList])
-  }
+  override def visitIfPartElse(ctx : IfPartElseContext) : ASTNode = visitChunk(ctx.chunk)
 
   override def visitFuncName(ctx : FuncNameContext) : ASTNode = {
     if (ctx.methodName != null)
@@ -571,14 +573,14 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     var params : Seq[IdentifierExpression] = null
     var hasVarArgs = false
     rawParams match {
-      case null => // Do nothing.
+      case null => params = Seq[IdentifierExpression]()
       case l : ExprList if l.elements.nonEmpty && l.elements.last.isInstanceOf[VarArgsExpression] => {
         params = for(e <- l.elements.slice(0, l.elements.size - 1)) yield e.asInstanceOf[IdentifierExpression]
         hasVarArgs = true
       }
       case l : ExprList if l.elements.nonEmpty => params = for (e <- l.elements) yield e.asInstanceOf[IdentifierExpression]
       case l : ExprList => params = Seq[IdentifierExpression]()
-      case v : VarArgsExpression => hasVarArgs = true
+      case v : VarArgsExpression => params = Seq[IdentifierExpression](); hasVarArgs = true
     }
     val body = visitChunk(ctx.chunk).asInstanceOf[StatementList]
     (params, hasVarArgs, body)
@@ -620,11 +622,12 @@ object ASTFromPTVisitor extends AbstractParseTreeVisitor[ASTNode] with SCLuaVisi
     if (s.charAt(0) == '"')
       return s.substring(1, s.length() - 1)
 
-    // If the string was singlequoted, we need to unescape single quotes and escape double quotes.
+    // If the string was singlequoted, we need to unescape single quotes and escape double quotes, but ignore
+    // already escaped double quotes.
     if (s.charAt(0) == '\'') {
       var inner = s.substring(1, s.length() - 1)
       inner = inner.replaceAll("\\\\'", "'")
-      return inner.replaceAll("\"", "\\\\\"")
+      return inner.replaceAll("(?<!\\\\)\"", "\\\\\"") // TODO this is not perfect, but works well enough.
     }
 
     // If it doesn't start with a single or double quote, it must start with a [[.

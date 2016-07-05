@@ -1,12 +1,12 @@
 package scluacheck
 
-import java.io.{File, FileReader}
+import java.io.{File, FileReader, FileWriter}
 
 import scala.collection.mutable.ArrayBuffer
 import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
-import scluacheck.verify.{BuildSymbolTableVisitor, InferBasicFunctionTypesVisitor, TypedPrettyPrintVisitor, VerifyFunctionIDsVisitor}
+import scluacheck.verify._
 
 object SCLuaCheck extends App {
   // Associates lexer errors with a file path.
@@ -27,12 +27,16 @@ object SCLuaCheck extends App {
   val failedVerification = new ArrayBuffer[String]
   val failedTypeChecking = new ArrayBuffer[String]
 
+  val inputDir = "C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\"
+  val outputDir = "C:\\Users\\John\\Desktop\\sclua-out\\lua-lua\\"
+
   def test(f : File) : Unit = {
     if (f.isDirectory) {
       for (e <- f.listFiles())
         test(e)
     } else if (!ignoreFiles.contains(f.getAbsolutePath) && (f.getName.endsWith(".lua") || f.getName.endsWith(".bp"))) {
       // Parse the file.
+      println(f.getAbsolutePath)
       val input = new ANTLRInputStream(new FileReader(f))
       val lexer = new SCLuaLexer(input)
       lexer.removeErrorListeners()
@@ -70,22 +74,53 @@ object SCLuaCheck extends App {
         try {
           InferBasicFunctionTypesVisitor.visit(abstractSyntaxTree)
           if (InferBasicFunctionTypesVisitor.errors.nonEmpty || InferBasicFunctionTypesVisitor.warnings.nonEmpty) {
-            failedTypeChecking ++= InferBasicFunctionTypesVisitor.warnings
-            failedTypeChecking ++= InferBasicFunctionTypesVisitor.errors
+            failedTypeChecking ++= InferBasicFunctionTypesVisitor.warnings.map(x => x + "  [" + f.getAbsolutePath + "]")
+            failedTypeChecking ++= InferBasicFunctionTypesVisitor.errors.map(x => x + "  [" + f.getAbsolutePath + "]")
           }
           if (InferBasicFunctionTypesVisitor.errors.isEmpty) {
             TypedPrettyPrintVisitor.globalTable = InferBasicFunctionTypesVisitor.globalTable
             TypedPrettyPrintVisitor.localTable = InferBasicFunctionTypesVisitor.localTable
-            println(TypedPrettyPrintVisitor.visit(abstractSyntaxTree))
+            //println(TypedPrettyPrintVisitor.visit(abstractSyntaxTree))
           }
         } catch {
           case e : Error => println("TYPE CHECKING FATAL ERROR in " + f.getAbsolutePath)
         }
+
+        // Re-print the file.
+        val relativePath = f.getAbsolutePath.substring(inputDir.length)
+        val outputFile = new File(outputDir + relativePath)
+
+        outputFile.getParentFile.mkdirs()
+        if (outputFile.exists) {
+          outputFile.delete()
+        }
+        if (!outputFile.createNewFile())
+          println("ERROR: Failed to create file.")
+
+        val writer = new FileWriter(outputFile)
+        val prettyPrinted = ASTPrettyPrintVisitor.visit(abstractSyntaxTree)
+        writer.append(prettyPrinted)
+        writer.close()
+
+        // Re-read the file and verify the AST is the same.
+        val astCheck = {
+          val input = new ANTLRInputStream(prettyPrinted)
+          val lexer = new SCLuaLexer(input)
+
+          val tokens = new CommonTokenStream(lexer)
+          val parser = new SCLuaParser(tokens)
+          val parseTree = parser.start()
+          ASTFromPTVisitor.visit(parseTree)
+        }
+        FirstDifferenceVisitor.baseAST = abstractSyntaxTree
+        val firstDiff = FirstDifferenceVisitor.visit(astCheck)
+        if (firstDiff != null)
+          println("ERROR: AST parse/print error at " + firstDiff.line + ":" + firstDiff.column)
       }
     }
   }
 
-  val testDir = new File("C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\aeonprojectiles.lua")
+  val testDir = new File(inputDir)
   test(testDir)
   if (failedParsing.nonEmpty)
     println("Parsing failures:\n  " + failedParsing.mkString("\n  "))
