@@ -15,12 +15,12 @@ import scala.collection.mutable.ArrayBuffer
   * Implementation note: any function whose corresponding function in BuildSymbolTableVisitor
   * creates a new symbol table must traverse into that symbol table.
   */
-object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
+class InferBasicFunctionTypesVisitor(val globalTable : SymbolTable, var localTable : SymbolTable)
+  extends ASTVisitor[TypedNode] {
+
   private var returnTypes : ArrayBuffer[Type] = null // The return types of the function we are in.
   private var _warnings : ArrayBuffer[String] = null
   private var _errors : ArrayBuffer[String] = null
-  var globalTable : SymbolTable = null
-  var localTable : SymbolTable = null
 
   def warnings = _warnings
   def errors = _errors
@@ -30,6 +30,9 @@ object InferBasicFunctionTypesVisitor extends ASTVisitor[TypedNode] {
 
   // The type of a file is always NilType.
   override def visit(n : FileNode) : TypedNode = {
+    if (_warnings != null || _errors != null)
+      throw new Error("Do not re-use an InferBasicFunctionTypesVisitor.")
+
     _warnings = new ArrayBuffer[String]
     _errors = new ArrayBuffer[String]
     visitList(n.statements)

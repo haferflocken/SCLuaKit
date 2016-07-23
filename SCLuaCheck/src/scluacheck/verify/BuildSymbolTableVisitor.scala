@@ -2,15 +2,13 @@ package scluacheck.verify
 
 import scluacheck.ast._
 
-import scala.collection.mutable
-import mutable.ArrayBuffer
 
 /**
   * Builds symbol tables for the Lua AST. This is the first pass of type checking.
   *
-  * The methods globalTable and localTable return the most recent result of running this visitor on a FileNode.
+  * The methods globalTable and localTable return the result of running this visitor on a FileNode.
   */
-object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
+class BuildSymbolTableVisitor extends ASTVisitor[Unit] {
   private var _globalTable : SymbolTable = null
   private var _localTable : SymbolTable = null
 
@@ -22,6 +20,9 @@ object BuildSymbolTableVisitor extends ASTVisitor[Unit] {
 
   // Visiting a file node resets things before visiting.
   override def visit(n : FileNode) : Unit = {
+    if (_globalTable != null || _localTable != null)
+      throw new Error("Do not re-use a BuildSymbolTableVisitor.")
+
     _globalTable = new SymbolTable(null)
     _localTable = new SymbolTable(null)
     visit(n.statements)

@@ -3,11 +3,10 @@ package scluacheck.verify
 import scluacheck.ast._
 
 /**
-  * Created by John on 5/3/2016.
+  * Pretty prints the AST in a Lua-like, type annotated language.
   */
-object TypedPrettyPrintVisitor extends BasePrettyPrintVisitor {
-  var globalTable : SymbolTable = null
-  var localTable : SymbolTable = null
+class TypedPrettyPrintVisitor(private var globalTable : SymbolTable, private var localTable : SymbolTable)
+  extends BasePrettyPrintVisitor {
 
   override def visit(n : ExplicitBlockStatement) : String = {
     localTable = localTable.subTables(n)

@@ -13,8 +13,8 @@ object SCLuaCheck extends App {
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\tests\\DumpQAVChecklist.lua" // Invalid backslash in string on line 112.
   )
 
-  val inputDir = "C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\sim\\"
-  val outputDir = "C:\\Users\\John\\Desktop\\sclua-out\\lua-lua\\sim\\"
+  val inputDir = "C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\sim\\Unit.lua"
+  val outputDir = "C:\\Users\\John\\Desktop\\sclua-out\\lua-lua\\sim\\Unit.lua"
 
   def test(f : File) : Unit = {
     if (f.isDirectory) {
@@ -40,30 +40,29 @@ object SCLuaCheck extends App {
         }
 
         // Run the type checker.
-        BuildSymbolTableVisitor.visit(abstractSyntaxTree)
+        val buildSymbolTableVisitor = new BuildSymbolTableVisitor
+        buildSymbolTableVisitor.visit(abstractSyntaxTree)
 
-        InferBasicFunctionTypesVisitor.globalTable = BuildSymbolTableVisitor.globalTable
-        InferBasicFunctionTypesVisitor.localTable = BuildSymbolTableVisitor.localTable
+        val basicInferenceVisitor = new InferBasicFunctionTypesVisitor(buildSymbolTableVisitor.globalTable, buildSymbolTableVisitor.localTable)
         try {
-          InferBasicFunctionTypesVisitor.visit(abstractSyntaxTree)
-          if (InferBasicFunctionTypesVisitor.warnings.nonEmpty) {
+          basicInferenceVisitor.visit(abstractSyntaxTree)
+          if (basicInferenceVisitor.warnings.nonEmpty) {
             println("Type checker warnings:")
-            for (w <- InferBasicFunctionTypesVisitor.warnings) {
+            for (w <- basicInferenceVisitor.warnings) {
               println("  " + w)
             }
           }
-          if (InferBasicFunctionTypesVisitor.errors.nonEmpty) {
+          if (basicInferenceVisitor.errors.nonEmpty) {
             println("Type checker errors:")
-            for (e <- InferBasicFunctionTypesVisitor.errors) {
+            for (e <- basicInferenceVisitor.errors) {
               println("  " + e)
             }
           } else {
-            TypedPrettyPrintVisitor.globalTable = InferBasicFunctionTypesVisitor.globalTable
-            TypedPrettyPrintVisitor.localTable = InferBasicFunctionTypesVisitor.localTable
-            //println(TypedPrettyPrintVisitor.visit(abstractSyntaxTree))
+            val printer = new TypedPrettyPrintVisitor(basicInferenceVisitor.globalTable, basicInferenceVisitor.localTable)
+            //println(printer.visit(abstractSyntaxTree))
           }
         } catch {
-          case e : Error => println("TYPE CHECKING FATAL ERROR in " + f.getAbsolutePath)
+          case e : Error => println("TYPE CHECKING FATAL ERROR: " + e.getMessage)
         }
 
         // Re-print the file.
