@@ -21,7 +21,7 @@ class StatementList(line : Int, column : Int, val elements : Seq[Statement]) ext
 
   override def hashCode(): Int = {
     val state = Seq(elements)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1009 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -39,7 +39,7 @@ class ExprList(line : Int, column : Int, val elements : Seq[Expression]) extends
 
   override def hashCode(): Int = {
     val state = Seq(elements)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1013 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -78,7 +78,7 @@ class FileNode(val statements : StatementList) extends ASTNode(0, 0) {
 
   override def hashCode(): Int = {
     val state = Seq(statements)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1019 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -98,7 +98,7 @@ class AssignmentStatement(line : Int, column : Int, val vars : ExprList, val val
 
   override def hashCode(): Int = {
     val state = Seq(vars, values)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1021 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -114,7 +114,7 @@ class FunctionCallStatement(line : Int, column : Int, val call : FunctionCallExp
 
   override def hashCode(): Int = {
     val state = Seq(call)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1031 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -130,7 +130,7 @@ class ExplicitBlockStatement(line : Int, column : Int, val statements : Statemen
 
   override def hashCode(): Int = {
     val state = Seq(statements)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1033 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -146,7 +146,7 @@ class WhileStatement(line : Int, column : Int, val condition : Expression, val b
 
   override def hashCode(): Int = {
     val state = Seq(condition, body)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1039 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -162,7 +162,7 @@ class RepeatUntilStatement(line : Int, column : Int, val body : StatementList, v
 
   override def hashCode(): Int = {
     val state = Seq(body, condition)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1049 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -179,7 +179,7 @@ class IfStatement(line : Int, column : Int, val conditions : Seq[Expression], va
 
   override def hashCode(): Int = {
     val state = Seq(conditions, bodies)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1051 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -204,7 +204,7 @@ class ReturnStatement(line : Int, column : Int, val returnValues : ExprList) ext
       return 52073233 // Random prime number.
 
     val state = Seq(returnValues)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1061 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -247,7 +247,7 @@ class ForNumericStatement(line : Int, column : Int, val index : IdentifierExpres
 
   override def hashCode(): Int = {
     val state = Seq(index, start, end, inc, body)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1063 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -269,7 +269,7 @@ class ForEachStatement(line : Int, column : Int, val i1 : IdentifierExpression, 
 
   override def hashCode(): Int = {
     val state = if (i2 != null) Seq(i1, i2, collection, body) else Seq(i1, collection, body)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1069 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -289,7 +289,7 @@ class LocalVariableDeclarationStatement(line : Int, column : Int, val names : Se
 
   override def hashCode(): Int = {
     val state = if (values != null) Seq(names, values) else Seq(names)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1087 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -309,7 +309,7 @@ class LogicalBinopExpression(line : Int, column : Int, val op : LogicalBinop.Log
 
   override def hashCode(): Int = {
     val state = Seq(op, lhs, rhs)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1091 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -325,7 +325,7 @@ class BitwiseBinopExpression(line : Int, column : Int, val op : BitwiseBinop.Bit
 
   override def hashCode(): Int = {
     val state = Seq(op, lhs, rhs)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1093 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -341,7 +341,7 @@ class RelationalBinopExpression(line : Int, column : Int, val op : RelationalBin
 
   override def hashCode(): Int = {
     val state = Seq(op, lhs, rhs)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1097 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -357,7 +357,7 @@ class ConcatenationExpression(line : Int, column : Int, val lhs : Expression, va
 
   override def hashCode(): Int = {
     val state = Seq(lhs, rhs)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1103 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -373,7 +373,7 @@ class ArithmeticBinopExpression(line : Int, column : Int, val op : ArithmeticBin
 
   override def hashCode(): Int = {
     val state = Seq(op, lhs, rhs)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1109 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -389,7 +389,7 @@ class NotExpression(line : Int, column : Int, val e : Expression) extends Expres
 
   override def hashCode(): Int = {
     val state = Seq(e)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1117 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -405,7 +405,7 @@ class NegationExpression(line : Int, column : Int, val e : Expression) extends E
 
   override def hashCode(): Int = {
     val state = Seq(e)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1123 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -429,7 +429,7 @@ class FunctionCallExpression(line : Int, column : Int, val func : Expression, va
 
   override def hashCode(): Int = {
     val state = if (args != null) Seq(func, args) else Seq(func)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1129 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -445,7 +445,7 @@ class TableAccessExpression(line : Int, column : Int, val table : Expression, va
 
   override def hashCode(): Int = {
     val state = Seq(table, field)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1151 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -461,7 +461,7 @@ class ParentheticalExpression(line : Int, column : Int, val e : Expression) exte
 
   override def hashCode(): Int = {
     val state = Seq(e)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1153 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -477,7 +477,7 @@ class IdentifierExpression(line : Int, column : Int, val id : String) extends Ex
 
   override def hashCode(): Int = {
     val state = Seq(id)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1163 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -493,7 +493,7 @@ class BooleanLiteral(line : Int, column : Int, val v : Boolean) extends Expressi
 
   override def hashCode(): Int = {
     val state = Seq(v)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1171 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -509,7 +509,7 @@ class NumericLiteral(line : Int, column : Int, val v : Double) extends Expressio
 
   override def hashCode(): Int = {
     val state = Seq(v)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1181 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -525,7 +525,7 @@ class StringLiteral(line : Int, column : Int, val v : String) extends Expression
 
   override def hashCode(): Int = {
     val state = Seq(v)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1187 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -555,7 +555,7 @@ class FunctionDeclarationExpression(line : Int, column : Int, val params : Seq[I
 
   override def hashCode(): Int = {
     val state = Seq(params, hasVarArgs, body)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1193 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -571,7 +571,7 @@ class TableConstructorExpression(line : Int, column : Int, val keys : ExprList, 
 
   override def hashCode(): Int = {
     val state = Seq(keys, values)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1201 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
@@ -587,7 +587,7 @@ class UpValueExpression(line : Int, column : Int, val id : IdentifierExpression)
 
   override def hashCode(): Int = {
     val state = Seq(id)
-    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+    1213 + state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
