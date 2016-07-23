@@ -1,34 +1,20 @@
 package scluacheck
 
-import java.io.{File, FileReader, FileWriter}
+import java.io.{File, FileWriter}
 
-import scala.collection.mutable.ArrayBuffer
-import org.antlr.v4.runtime._
 import scluacheck.ast._
 import scluacheck.parser._
 import scluacheck.verify._
 
 object SCLuaCheck extends App {
-  // Associates lexer errors with a file path.
-  object MyErrorListener extends BaseErrorListener {
-    var filePath = ""
-    override def syntaxError(recognizer : Recognizer[_,_], offendingSymbol : Object, line : Int,
-                             charPositionInLine : Int, msg : String, e : RecognitionException) : Unit = {
-      println(filePath + " !!! " + line + ":" + charPositionInLine + " !!! " + msg)
-    }
-  }
-
   val ignoreFiles = Array(
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\lazyvar.lua", // expression '&1&4' at line 108.
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\system\\MultiEvent.lua", // expression '&1&1 n' at line 9.
     "C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\tests\\DumpQAVChecklist.lua" // Invalid backslash in string on line 112.
   )
-  val failedParsing = new ArrayBuffer[String]
-  val failedVerification = new ArrayBuffer[String]
-  val failedTypeChecking = new ArrayBuffer[String]
 
-  val inputDir = "C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\"
-  val outputDir = "C:\\Users\\John\\Desktop\\sclua-out\\lua-lua\\"
+  val inputDir = "C:\\Users\\John\\Desktop\\scfa-lua\\lua-lua\\sim\\"
+  val outputDir = "C:\\Users\\John\\Desktop\\sclua-out\\lua-lua\\sim\\"
 
   def test(f : File) : Unit = {
     if (f.isDirectory) {
@@ -37,33 +23,20 @@ object SCLuaCheck extends App {
     } else if (!ignoreFiles.contains(f.getAbsolutePath) && (f.getName.endsWith(".lua") || f.getName.endsWith(".bp"))) {
       // Parse the file.
       println(f.getAbsolutePath)
-      val input = new ANTLRInputStream(new FileReader(f))
-      val lexer = new SCLuaLexer(input)
-      lexer.removeErrorListeners()
-      MyErrorListener.filePath = f.getAbsolutePath
-      lexer.addErrorListener(MyErrorListener)
-
-      val tokens = new CommonTokenStream(lexer)
-      val parser = new SCLuaParser(tokens)
-      val parseTree = parser.start()
-
-      // Verify the file parsed successfully.
-      if (parser.getNumberOfSyntaxErrors > 0) {
-        failedParsing += f.getAbsolutePath
+      val astGenerator = new ASTGenerator
+      val abstractSyntaxTree = astGenerator.parseFile(f)
+      if (abstractSyntaxTree == null) {
+        // If the generator could not make an AST, report the problems.
+        astGenerator.printErrors()
       } else {
-        // Make an abstract syntax tree to run verifications on.
-        val abstractSyntaxTree = ASTFromPTVisitor.visit(parseTree) match {
-          case n : FileNode => n
-          case _ =>
-            println("PARSE ERROR in " + f.getAbsolutePath + ": The parse tree was not parsed into a FileNode.")
-            return
-        }
-
+        // If the AST was successfully created, run verifications on it.
         // Run the function ID verification.
         val badFnIDs = VerifyFunctionIDsVisitor.visit(abstractSyntaxTree)
         if (badFnIDs.nonEmpty) {
-          val badFnPositions = badFnIDs.map((f : ASTNode) => f.line + ":" + f.column)
-          failedVerification +=  "BAD FUNCTION ID in " + f.getAbsolutePath + " at " + badFnPositions.mkString(", ")
+          println("Bad function IDs:")
+          for (badFnID <- badFnIDs) {
+            println(badFnID.line + ":" + badFnID.column + " -> " + badFnID.getClass.getName)
+          }
         }
 
         // Run the type checker.
@@ -73,11 +46,18 @@ object SCLuaCheck extends App {
         InferBasicFunctionTypesVisitor.localTable = BuildSymbolTableVisitor.localTable
         try {
           InferBasicFunctionTypesVisitor.visit(abstractSyntaxTree)
-          if (InferBasicFunctionTypesVisitor.errors.nonEmpty || InferBasicFunctionTypesVisitor.warnings.nonEmpty) {
-            failedTypeChecking ++= InferBasicFunctionTypesVisitor.warnings.map(x => x + "  [" + f.getAbsolutePath + "]")
-            failedTypeChecking ++= InferBasicFunctionTypesVisitor.errors.map(x => x + "  [" + f.getAbsolutePath + "]")
+          if (InferBasicFunctionTypesVisitor.warnings.nonEmpty) {
+            println("Type checker warnings:")
+            for (w <- InferBasicFunctionTypesVisitor.warnings) {
+              println("  " + w)
+            }
           }
-          if (InferBasicFunctionTypesVisitor.errors.isEmpty) {
+          if (InferBasicFunctionTypesVisitor.errors.nonEmpty) {
+            println("Type checker errors:")
+            for (e <- InferBasicFunctionTypesVisitor.errors) {
+              println("  " + e)
+            }
+          } else {
             TypedPrettyPrintVisitor.globalTable = InferBasicFunctionTypesVisitor.globalTable
             TypedPrettyPrintVisitor.localTable = InferBasicFunctionTypesVisitor.localTable
             //println(TypedPrettyPrintVisitor.visit(abstractSyntaxTree))
@@ -104,30 +84,19 @@ object SCLuaCheck extends App {
 
         // Re-read the file and verify the AST is the same.
         val astCheck = {
-          val input = new ANTLRInputStream(prettyPrinted)
-          val lexer = new SCLuaLexer(input)
-
-          val tokens = new CommonTokenStream(lexer)
-          val parser = new SCLuaParser(tokens)
-          val parseTree = parser.start()
-          ASTFromPTVisitor.visit(parseTree)
+          val checkGenerator = new ASTGenerator
+          checkGenerator.parseString(prettyPrinted)
         }
         FirstDifferenceVisitor.baseAST = abstractSyntaxTree
         val firstDiff = FirstDifferenceVisitor.visit(astCheck)
         if (firstDiff != null)
-          println("ERROR: AST parse/print error at " + firstDiff.line + ":" + firstDiff.column)
+          println("AST parse/print error at " + firstDiff.line + ":" + firstDiff.column)
       }
     }
   }
 
   val testDir = new File(inputDir)
   test(testDir)
-  if (failedParsing.nonEmpty)
-    println("Parsing failures:\n  " + failedParsing.mkString("\n  "))
-  if (failedVerification.nonEmpty)
-    println("Verification failures:\n  " + failedVerification.mkString("\n  "))
-  if (failedTypeChecking.nonEmpty)
-    println("Type checking failures:\n  " + failedTypeChecking.mkString("\n  "))
 
   /*val testFile = new File("C:\\Users\\John\\Desktop\\scfa-lua\\mohodata-lua\\sim\\DefaultProjectiles.lua")
   val input = new ANTLRInputStream(new FileReader(testFile))
