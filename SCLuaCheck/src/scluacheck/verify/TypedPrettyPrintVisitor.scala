@@ -32,23 +32,20 @@ class TypedPrettyPrintVisitor(private var globalTable : SymbolTable, private var
 
   override def visit(n : IfStatement) : String = {
     var out = "if " + visit(n.conditions.head) + " then\n"
-
-    localTable = localTable.subTables(n)
+    localTable = localTable.subTables(n.bodies.head)
     out += indentVisitList(n.bodies.head).trim()
     localTable = localTable.parentTable
 
     for (i <- Range(1, n.conditions.size)) {
       out += "\nelseif " + visit(n.conditions(i)) + " then\n"
-
-      localTable = localTable.subTables(n)
+      localTable = localTable.subTables(n.bodies(i))
       out += indentVisitList(n.bodies(i)).trim()
       localTable = localTable.parentTable
     }
 
     if (n.conditions.size < n.bodies.size) {
       out += "\nelse\n"
-
-      localTable = localTable.subTables(n)
+      localTable = localTable.subTables(n.bodies.last)
       out += indentVisitList(n.bodies.last).trim()
       localTable = localTable.parentTable
     }
